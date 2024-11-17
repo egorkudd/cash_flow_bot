@@ -4,4 +4,5 @@ public enum EConversation {
     SEND_BOT_MESSAGE,
     ADD_TRANSACTION,
     CONFIGURE,
+    STATISTIC,
 }

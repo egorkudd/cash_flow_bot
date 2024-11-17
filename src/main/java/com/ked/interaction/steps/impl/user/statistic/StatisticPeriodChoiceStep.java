@@ -1,9 +1,8 @@
-package com.ked.interaction.steps.impl.user.configure;
+package com.ked.interaction.steps.impl.user.statistic;
 
-import com.ked.core.entities.Category;
 import com.ked.core.entities.User;
-import com.ked.core.services.CategoryService;
-import com.ked.core.services.TransactionService;
+import com.ked.core.enums.ETimeInterval;
+import com.ked.core.services.StatisticService;
 import com.ked.core.services.UserService;
 import com.ked.interaction.steps.ChoiceStep;
 import com.ked.tg.dto.ButtonDto;
@@ -25,20 +24,19 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class CategoryChoiceStep extends ChoiceStep {
-    private static final String PREPARE_MESSAGE_TEXT = "Выберите категорию транзакции";
+public class StatisticPeriodChoiceStep extends ChoiceStep {
+    private static final String PREPARE_MESSAGE_TEXT = "Выберите период";
 
-    private final CategoryService categoryService;
+    private final StatisticService statisticService;
 
     private final UserService userService;
 
     private final KeyboardMapper keyboardMapper;
 
-
     @Override
     protected ResultDto isValidData(MessageDto messageDto) throws EntityNotFoundBotException {
         if (!ValidUtil.isCallback(messageDto.getEMessage()) ||
-                !categoryService.exists(Long.valueOf(messageDto.getData()))
+                !ETimeInterval.isExists(messageDto.getData())
         ) {
             return new ResultDto(false, EXCEPTION_MESSAGE_TEXT);
         }
@@ -55,18 +53,23 @@ public class CategoryChoiceStep extends ChoiceStep {
 
     @Override
     protected int finishStep(TgChat tgChat, AbsSender sender, String data) throws AbstractBotException {
-        categoryService.deleteCreatedAt(data);
-        return 0;
+        User user = userService.findByTgId(tgChat.getChatId());
+        statisticService.setPeriod(data, user.getId());
+
+        if (!ETimeInterval.CUSTOM.toString().equals(data)) {
+            return 0;
+        }
+
+        return 1;
     }
 
     private KeyboardDto getKeyboardDto(TgChat tgChat) {
-        User user = userService.findByTgId(tgChat.getChatId());
-        List<Category> categoryList = categoryService.findAllByUserIdToChoose(user.getId());
+        ETimeInterval[] eTimeIntervalArray = ETimeInterval.values();
         List<ButtonDto> buttonDtoList = new ArrayList<>();
-        for (Category category : categoryList) {
-            buttonDtoList.add(new ButtonDto(category.getId().toString(), category.getName()));
+        for (ETimeInterval eTimeInterval : eTimeIntervalArray) {
+            buttonDtoList.add(new ButtonDto(eTimeInterval.toString(), eTimeInterval.getValue()));
         }
 
         return keyboardMapper.keyboardDto(tgChat, buttonDtoList);
-    } // TODO: вынести куда-то
+    }
 }
