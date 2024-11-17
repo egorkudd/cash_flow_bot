@@ -13,10 +13,14 @@ public class TransactionMapper {
         }
 
         return TransactionDto.builder()
+                .id(transaction.getId())
                 .userId(transaction.getUserId())
+                .categoryId(transaction.getCategoryId())
+                .title(transaction.getTitle())
                 .eTransaction(transaction.getType())
                 .amount(transaction.getAmount())
                 .eCurrency(transaction.getECurrency())
+                .createdAt(transaction.getCreatedAt())
                 .build();
     }
 

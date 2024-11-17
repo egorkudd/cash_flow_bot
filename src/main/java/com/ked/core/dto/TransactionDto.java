@@ -7,13 +7,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Getter
 @Setter
 @Builder
 public class TransactionDto {
+    private Long id;
     private Long userId;
+    private Long categoryId;
+    private String title;
     private ETransaction eTransaction;
     private BigDecimal amount;
     private ECurrency eCurrency;
+    private Instant createdAt;
 }
