@@ -26,30 +26,25 @@ public class StatisticServiceImpl implements StatisticService {
     @Override
     public StatisticInfo getTransactionStatisticByTimeInterval(Long userId, ETimeInterval interval, Instant dateTime) {
 
-        List<TransactionDto> transactions = new ArrayList<>();
+        List<TransactionDto> transactions = switch (interval) {
+            case DAY -> transactionRepository.findByUserIdAndCreatedAt(userId, dateTime).stream()
+                    .map(transactionMapper::toDto)
+                    .toList();
+            case WEEK -> transactionRepository.findByUserIdAndCreatedAtBetween(
+                            userId,
+                            dateTime.minusSeconds(6 * 24 * 60 * 60),
+                            dateTime
+                    ).stream()
+                    .map(transactionMapper::toDto)
+                    .toList();
+            case MONTH -> transactionRepository.findByUserIdAndMonth(userId, dateTime).stream()
+                    .map(transactionMapper::toDto)
+                    .toList();
+            case YEAR -> transactionRepository.findByUserIdAndYear(userId, dateTime).stream()
+                    .map(transactionMapper::toDto)
+                    .toList();
+        };
 
-        switch (interval) {
-            case DAY:
-                transactions = transactionRepository.findByUserIdAndCreatedAt(userId, dateTime).stream()
-                        .map(transactionMapper::toDto)
-                        .toList();
-            case WEEK:
-                transactions = transactionRepository.findByUserIdAndCreatedAtBetween(
-                                userId,
-                                dateTime.minusSeconds(6 * 24 * 60 * 60),
-                                dateTime
-                        ).stream()
-                        .map(transactionMapper::toDto)
-                        .toList();
-            case MONTH:
-                transactions = transactionRepository.findByUserIdAndMonth(userId, dateTime).stream()
-                        .map(transactionMapper::toDto)
-                        .toList();
-            case YEAR:
-                transactions = transactionRepository.findByUserIdAndYear(userId, dateTime).stream()
-                        .map(transactionMapper::toDto)
-                        .toList();
-        }
         return StatisticInfo.builder()
                 .transactions(transactions)
                 .build();
