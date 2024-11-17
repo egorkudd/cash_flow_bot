@@ -1,10 +1,6 @@
 package com.ked.interaction.configs;
 
-import com.ked.interaction.commands.AddTransactionCommand;
-import com.ked.interaction.commands.ConfigureCommand;
-import com.ked.interaction.commands.InfoCommand;
-import com.ked.interaction.commands.SendBotMessageCommand;
-import com.ked.interaction.commands.StartCommand;
+import com.ked.interaction.commands.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

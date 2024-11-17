@@ -8,10 +8,12 @@ import com.ked.core.repositories.TransactionRepository;
 import com.ked.core.services.StatisticService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jvnet.hk2.annotations.Service;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -20,6 +22,7 @@ public class StatisticServiceImpl implements StatisticService {
 
     private final TransactionRepository transactionRepository;
     private final TransactionMapper transactionMapper;
+    private final ChartGenerator chartGenerator;
 
     @Override
     public StatisticInfo getTransactionStatisticByTimeInterval(Long userId, ETimeInterval interval, Instant dateTime) {
@@ -43,20 +46,48 @@ public class StatisticServiceImpl implements StatisticService {
                     .toList();
         };
 
+        log.info("Transactions: {}", transactions);
+
+        Map<String, Double> categoryDistribution = calculateCategoryDistribution(transactions);
+
+        log.info("Category Distribution: {}", categoryDistribution);
+
         return StatisticInfo.builder()
+                .diagramPng(chartGenerator.generatePieChart(categoryDistribution))
                 .transactions(transactions)
                 .build();
     }
+
 
     @Override
     public StatisticInfo getTransactionStatisticByCustomTimeInterval(Long userId, Instant startDate, Instant endDate) {
         List<TransactionDto> transactions = transactionRepository
                 .findByUserIdAndCreatedAtBetween(userId, startDate, endDate).stream()
                 .map(transactionMapper::toDto)
-                .toList();
-        ;
+                .toList();;
+
+        Map<String, Double> categoryDistribution = calculateCategoryDistribution(transactions);
+
         return StatisticInfo.builder()
+                .diagramPng(chartGenerator.generatePieChart(categoryDistribution))
                 .transactions(transactions)
                 .build();
+    }
+
+    private Map<String, Double> calculateCategoryDistribution(List<TransactionDto> transactions) {
+        if (transactions.isEmpty()) {
+            return Map.of();
+        }
+
+        long totalTransactions = transactions.size();
+
+        Map<String, Long> categoryCounts = transactions.stream()
+                .collect(Collectors.groupingBy(TransactionDto::getCategoryName, Collectors.counting()));
+
+        return categoryCounts.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> (entry.getValue() * 100.0) / totalTransactions
+                ));
     }
 }

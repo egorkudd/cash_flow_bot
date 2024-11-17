@@ -16,6 +16,7 @@ public class TransactionDto {
     private Long id;
     private Long userId;
     private Long categoryId;
+    private String categoryName;
     private String title;
     private ETransaction eTransaction;
     private BigDecimal amount;
