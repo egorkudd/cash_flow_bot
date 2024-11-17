@@ -22,8 +22,11 @@ public class TransactionMapper {
                 .id(transaction.getId())
                 .userId(transaction.getUserId())
                 .categoryId(transaction.getCategoryId())
-                .categoryName(categoryRepository.findById(transaction.getCategoryId())
-                        .orElseThrow(() -> new EntityNotFoundBotException("Категория не найдена по Id: " + transaction.getCategoryId())).getName())
+                .categoryName(categoryRepository.findById(transaction.getCategoryId()).orElseThrow(() ->
+                        new EntityNotFoundBotException(
+                                "Категория не найдена по Id: " + transaction.getCategoryId()
+                        )).getName()
+                )
                 .title(transaction.getTitle())
                 .eTransaction(transaction.getType())
                 .amount(transaction.getAmount())

@@ -11,25 +11,34 @@ import com.ked.tg.dto.MessageDto;
 import com.ked.tg.dto.ResultDto;
 import com.ked.tg.entities.TgChat;
 import com.ked.tg.exceptions.AbstractBotException;
+import com.ked.tg.exceptions.CommandBotException;
 import com.ked.tg.utils.DateUtil;
 import com.ked.tg.utils.MessageUtil;
 import com.ked.tg.utils.StepUtil;
 import com.spire.doc.Document;
 import com.spire.doc.FileFormat;
 import com.spire.doc.Section;
-import com.spire.doc.documents.Paragraph;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class StatisticLastDateInputStep extends InputStep {
-    @Value("${report.path}")
-    private String reportPath;
+    @Value("${report.file}")
+    private String reportFile;
+
+    @Value("${report.photo}")
+    private String reportDiagram;
 
     private static final String PREPARE_MESSAGE_TEXT = "Введите конечную дату";
 
@@ -52,8 +61,29 @@ public class StatisticLastDateInputStep extends InputStep {
                 user.getId(), statistic.getETimeInterval(), DateUtil.convertInstant(data)
         );
 
-        System.out.println(info.getTransactions().size());
+        sendDiagram(info.getDiagramPng(), tgChat, sender);
+        sendReport(tgChat, sender, info, statistic);
 
+        return 0;
+    }
+
+    private void sendDiagram(byte[] byteArray, TgChat tgChat, AbsSender sender) {
+        try {
+            createDiagramFile(byteArray);
+            File reportDiagramFile = new File(reportDiagram);
+            MessageUtil.sendPhoto(tgChat.getChatId(), reportDiagramFile, sender);
+            reportDiagramFile.delete();
+        } catch (IOException e) {
+            throw new CommandBotException(e.getMessage(), "Что-то пошло не так. Обратитесь в поддержку");
+        }
+    }
+
+    private void createDiagramFile(byte[] byteArray) throws IOException {
+        Path filePath = Paths.get(reportDiagram);
+        Files.write(filePath, byteArray);
+    }
+
+    private void sendReport(TgChat tgChat, AbsSender sender, StatisticInfo info, Statistic statistic) {
         File report = createDocument(info);
         MessageUtil.sendDocument(
                 MessageBuilder.create()
@@ -63,8 +93,6 @@ public class StatisticLastDateInputStep extends InputStep {
                 sender
         );
         report.delete();
-
-        return 0;
     }
 
     @Override
@@ -82,8 +110,8 @@ public class StatisticLastDateInputStep extends InputStep {
         statisticInfo.getTransactions().forEach(transactionDto -> {
             section.addParagraph().setText(transactionDto.toString());
         });
-        document.saveToFile(reportPath, FileFormat.PDF);
+        document.saveToFile(reportFile, FileFormat.PDF);
 
-        return new File(reportPath);
+        return new File(reportFile);
     }
 }

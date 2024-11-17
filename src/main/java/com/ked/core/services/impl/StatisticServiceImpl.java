@@ -33,6 +33,7 @@ public class StatisticServiceImpl implements StatisticService {
     private final TransactionRepository transactionRepository;
 
     private final TransactionMapper transactionMapper;
+
     private final ChartGenerator chartGenerator;
 
     @Override

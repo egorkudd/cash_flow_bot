@@ -24,14 +24,12 @@ public class TransactionDto {
     private ECurrency eCurrency;
     private Instant createdAt;
 
-
     @Override
     public String toString() {
         String date = DateUtil.convertDate(createdAt);
-
         return title == null
-                ? "[%s] {%s} (%d) %s".formatted(date, eTransaction.getValue(), categoryId, amount)
-                : "[%s] {%s} (%d) %s %s".formatted(date, eTransaction.getValue(), categoryId, title, amount);
+                ? "[%s] {%s} (%s) %s".formatted(date, eTransaction.getValue(), categoryName, amount)
+                : "[%s] {%s} (%s) %s %s".formatted(date, eTransaction.getValue(), categoryName, title, amount);
 
     }
 }
