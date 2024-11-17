@@ -70,11 +70,9 @@ public class StatisticServiceImpl implements StatisticService {
 
     @Override
     public StatisticInfo getTransactionStatisticByCustomTimeInterval(Long userId, Instant startDate, Instant endDate) {
-        List<TransactionDto> transactions = transactionRepository
-                .findByUserIdAndCreatedAtBetween(userId, startDate, endDate).stream()
+        List<TransactionDto> transactions = getTransactionsByUserAndDay(userId, startDate, endDate).stream()
                 .map(transactionMapper::toDto)
-                .toList();
-        ;
+                .toList();;
 
         Map<String, Double> categoryDistribution = calculateCategoryDistribution(transactions);
 
@@ -138,6 +136,21 @@ public class StatisticServiceImpl implements StatisticService {
                         Map.Entry::getKey,
                         entry -> totalSum.compareTo(BigDecimal.ZERO) == 0 ? 0.0 : (entry.getValue().multiply(BigDecimal.valueOf(100.0)).divide(totalSum, BigDecimal.ROUND_HALF_UP)).doubleValue()
                 ));
+    }
+
+    private List<Transaction> getTransactionsByUserAndDay(Long userId, Instant startDate, Instant endDate) {
+        LocalDate startlocalDate = startDate.atZone(ZoneId.of("Europe/Moscow")).toLocalDate();
+        LocalDate endlocalDate = endDate.atZone(ZoneId.of("Europe/Moscow")).toLocalDate();
+
+        LocalDateTime dayOfMonthTime = startlocalDate.atStartOfDay();
+        ZonedDateTime dayZonedDateTime = dayOfMonthTime.atZone(ZoneId.of("UTC"));
+        Instant firstInstant = dayZonedDateTime.toInstant();
+
+        LocalDateTime dayEndOfMonthTime = endlocalDate.atTime(23, 59, 59, 999_999_999);
+        ZonedDateTime dayEndZonedDateTime = dayEndOfMonthTime.atZone(ZoneId.of("UTC"));
+        Instant secondInstant = dayEndZonedDateTime.toInstant();
+
+        return transactionRepository.findByUserIdAndCreatedAtBetween(userId, firstInstant, secondInstant);
     }
 
     private List<Transaction> getTransactionsByUserAndDay(Long userId, Instant date) {
