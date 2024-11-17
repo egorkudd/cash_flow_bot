@@ -23,14 +23,16 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("endDate") Instant endDate);
 
     @Query("SELECT t FROM Transaction t WHERE t.userId = :userId " +
-            "AND MONTH(t.createdAt) = MONTH(:date) AND YEAR(t.createdAt) = YEAR(:date)")
+            "AND t.createdAt >= :startOfMonth AND t.createdAt < :endOfMonth")
     List<Transaction> findByUserIdAndMonth(
             @Param("userId") Long userId,
-            @Param("date") Instant date);
+            @Param("startOfMonth") Instant startOfMonth,
+            @Param("endOfMonth") Instant endOfMonth);
 
     @Query("SELECT t FROM Transaction t WHERE t.userId = :userId " +
-            "AND YEAR(t.createdAt) = YEAR(:date)")
+            "AND t.createdAt >= :startOfYear AND t.createdAt < :endOfYear")
     List<Transaction> findByUserIdAndYear(
             @Param("userId") Long userId,
-            @Param("date") Instant date);
+            @Param("startOfYear") Instant startOfYear,
+            @Param("endOfYear") Instant endOfYear);
 }

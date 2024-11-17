@@ -3,6 +3,7 @@ package com.ked.core.services.impl;
 import com.ked.core.dto.StatisticInfo;
 import com.ked.core.dto.TransactionDto;
 import com.ked.core.entities.Statistic;
+import com.ked.core.entities.Transaction;
 import com.ked.core.enums.ETimeInterval;
 import com.ked.core.mappers.TransactionMapper;
 import com.ked.core.repositories.StatisticRepository;
@@ -14,7 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.math.BigDecimal;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,20 +41,16 @@ public class StatisticServiceImpl implements StatisticService {
     @Override
     public StatisticInfo getTransactionStatisticByTimeInterval(Long userId, ETimeInterval interval, Instant dateTime) {
         List<TransactionDto> transactions = switch (interval) {
-            case DAY -> transactionRepository.findByUserIdAndCreatedAt(userId, dateTime).stream()
+            case DAY -> getTransactionsByUserAndDay(userId, dateTime).stream()
                     .map(transactionMapper::toDto)
                     .toList();
-            case WEEK -> transactionRepository.findByUserIdAndCreatedAtBetween(
-                            userId,
-                            dateTime.minusSeconds(6 * 24 * 60 * 60),
-                            dateTime
-                    ).stream()
+            case WEEK -> getTransactionsByUserAndWeek(userId, dateTime).stream()
                     .map(transactionMapper::toDto)
                     .toList();
-            case MONTH -> transactionRepository.findByUserIdAndMonth(userId, dateTime).stream()
+            case MONTH -> getTransactionsByUserAndDate(userId, dateTime).stream()
                     .map(transactionMapper::toDto)
                     .toList();
-            case YEAR -> transactionRepository.findByUserIdAndYear(userId, dateTime).stream()
+            case YEAR -> getTransactionsByUserAndYear(userId, dateTime).stream()
                     .map(transactionMapper::toDto)
                     .toList();
             default -> new ArrayList<>();
@@ -75,7 +73,8 @@ public class StatisticServiceImpl implements StatisticService {
         List<TransactionDto> transactions = transactionRepository
                 .findByUserIdAndCreatedAtBetween(userId, startDate, endDate).stream()
                 .map(transactionMapper::toDto)
-                .toList();;
+                .toList();
+        ;
 
         Map<String, Double> categoryDistribution = calculateCategoryDistribution(transactions);
 
@@ -121,22 +120,97 @@ public class StatisticServiceImpl implements StatisticService {
             throw new EntityNotFoundBotException("Не существует пользователя ID=".concat(String.valueOf(userId)));
         }
     }
-    
+
     private Map<String, Double> calculateCategoryDistribution(List<TransactionDto> transactions) {
         if (transactions.isEmpty()) {
             return Map.of();
         }
 
-        long totalTransactions = transactions.size();
+        Map<String, BigDecimal> categorySums = transactions.stream()
+                .collect(Collectors.groupingBy(TransactionDto::getCategoryName,
+                        Collectors.mapping(TransactionDto::getAmount, Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
 
-        Map<String, Long> categoryCounts = transactions.stream()
-                .collect(Collectors.groupingBy(TransactionDto::getCategoryName, Collectors.counting()));
+        BigDecimal totalSum = categorySums.values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return categoryCounts.entrySet().stream()
+        return categorySums.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        entry -> (entry.getValue() * 100.0) / totalTransactions
+                        entry -> totalSum.compareTo(BigDecimal.ZERO) == 0 ? 0.0 : (entry.getValue().multiply(BigDecimal.valueOf(100.0)).divide(totalSum, BigDecimal.ROUND_HALF_UP)).doubleValue()
                 ));
     }
 
+    private List<Transaction> getTransactionsByUserAndDay(Long userId, Instant date) {
+        LocalDate localDate = date.atZone(ZoneId.of("Europe/Moscow")).toLocalDate();
+        int month = localDate.getMonthValue();
+        int year = localDate.getYear();
+        int day = localDate.getDayOfMonth();
+
+        LocalDate dayLocalDate = LocalDate.of(year, month, day);
+        LocalDateTime dayOfMonthTime = dayLocalDate.atStartOfDay();
+        ZonedDateTime dayZonedDateTime = dayOfMonthTime.atZone(ZoneId.of("UTC"));
+        Instant firstInstant = dayZonedDateTime.toInstant();
+
+        LocalDate dayEndLocalDate = LocalDate.of(year, month, day);
+        LocalDateTime dayEndOfMonthTime = dayEndLocalDate.atTime(23, 59, 59, 999_999_999);
+        ZonedDateTime dayEndZonedDateTime = dayEndOfMonthTime.atZone(ZoneId.of("UTC"));
+        Instant secondInstant = dayEndZonedDateTime.toInstant();
+
+        return transactionRepository.findByUserIdAndCreatedAtBetween(userId, firstInstant, secondInstant);
+    }
+
+    private List<Transaction> getTransactionsByUserAndWeek(Long userId, Instant date) {
+        LocalDate localDate = date.atZone(ZoneId.of("Europe/Moscow")).toLocalDate();
+        int month = localDate.getMonthValue();
+        int year = localDate.getYear();
+        int day = localDate.getDayOfMonth();
+
+        LocalDate dayLocalDate = LocalDate.of(year, month, day);
+        LocalDateTime dayOfMonthTime = dayLocalDate.atStartOfDay().minusDays(6);
+        ZonedDateTime dayZonedDateTime = dayOfMonthTime.atZone(ZoneId.of("UTC"));
+        Instant firstInstant = dayZonedDateTime.toInstant();
+
+        LocalDate dayEndLocalDate = LocalDate.of(year, month, day);
+        LocalDateTime dayEndOfMonthTime = dayEndLocalDate.atTime(23, 59, 59, 999_999_999);
+        ;
+        ZonedDateTime dayEndZonedDateTime = dayEndOfMonthTime.atZone(ZoneId.of("UTC"));
+        Instant secondInstant = dayEndZonedDateTime.toInstant();
+
+        return transactionRepository.findByUserIdAndCreatedAtBetween(userId, firstInstant, secondInstant);
+    }
+
+    private List<Transaction> getTransactionsByUserAndDate(Long userId, Instant date) {
+        LocalDate localDate = date.atZone(ZoneId.of("Europe/Moscow")).toLocalDate();
+        int month = localDate.getMonthValue();
+        int year = localDate.getYear();
+
+        LocalDate firstDayOfMonth = LocalDate.of(year, month, 1);
+        LocalDateTime firstDayOfMonthTime = firstDayOfMonth.atStartOfDay();
+        ZonedDateTime firstZonedDateTime = firstDayOfMonthTime.atZone(ZoneId.of("UTC"));
+        Instant firstInstant = firstZonedDateTime.toInstant();
+
+        LocalDate lastDayOfMonth = LocalDate.of(year, month, firstDayOfMonth.lengthOfMonth());
+        LocalDateTime lastDayOfMonthTime = lastDayOfMonth.atTime(23, 59, 59, 999_999_999);
+        ZonedDateTime lastZonedDateTime = lastDayOfMonthTime.atZone(ZoneId.of("UTC"));
+        Instant lastInstant = lastZonedDateTime.toInstant();
+
+        return transactionRepository.findByUserIdAndMonth(userId, firstInstant, lastInstant);
+    }
+
+    private List<Transaction> getTransactionsByUserAndYear(Long userId, Instant date) {
+
+        LocalDate localDate = date.atZone(ZoneId.of("Europe/Moscow")).toLocalDate();
+        int year = localDate.getYear();
+        LocalDate firstDayOfYear = LocalDate.of(year, 1, 1);
+        LocalDateTime firstDayOfYearTime = firstDayOfYear.atStartOfDay();
+        ZonedDateTime firstZonedDateTime = firstDayOfYearTime.atZone(ZoneId.of("UTC"));
+        Instant firstInstant = firstZonedDateTime.toInstant();
+
+        LocalDate lastDayOfYear = LocalDate.of(year, 12, 31);
+        LocalDateTime lastDayOfYearTime = lastDayOfYear.atTime(23, 59, 59, 999_999_999); // Устанавливаем время на конец дня
+        ZonedDateTime lastZonedDateTime = lastDayOfYearTime.atZone(ZoneId.of("UTC"));
+        Instant lastInstant = lastZonedDateTime.toInstant();
+
+        return transactionRepository.findByUserIdAndYear(userId, firstInstant, lastInstant);
+    }
 }
