@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Entity
@@ -31,11 +32,11 @@ public class User {
     private String passwordHash;
 
     @Column(name = "created_at")
-    private Date createdAt;
+    private Instant createdAt;
 
     public User(Long tgId, String name) {
         this.tgId = tgId;
         this.name = name;
-        this.createdAt = new Date();
+        this.createdAt = Instant.now();
     }
 }

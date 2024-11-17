@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Setter
@@ -34,5 +35,5 @@ public class Category {
     private ETransaction type;
 
     @Column(name = "created_at")
-    private Date createdAt;
+    private Instant createdAt;
 }

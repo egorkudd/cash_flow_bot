@@ -11,6 +11,7 @@ import com.ked.tg.exceptions.EntityNotFoundBotException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
         checkUser(userId);
 
         Category category = getCollectingCategoryByUserId(userId);
-        category.setCreatedAt(new Date());
+        category.setCreatedAt(Instant.now());
         categoryRepository.saveAndFlush(category);
     }
 
