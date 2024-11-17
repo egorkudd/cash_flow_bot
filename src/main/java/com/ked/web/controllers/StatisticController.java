@@ -23,9 +23,7 @@ public class StatisticController {
     public ResponseEntity<List<TransactionDto>> getTransactionListBetweenDates(@RequestBody StatisticRequest request) {
         return ResponseEntity.ok(
                 statisticService.getTransactionStatisticByCustomTimeInterval(
-                        request.getUserId(),
-                        DateUtil.convertInstant(request.getStartDateStr()),
-                        DateUtil.convertInstant(request.getEndDateStr())
+                        request.getUserId(), request.getStartDate(), request.getEndDate()
                 ).getTransactions()
         );
     }
