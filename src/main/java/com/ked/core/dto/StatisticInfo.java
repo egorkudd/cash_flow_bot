@@ -9,4 +9,5 @@ import java.util.List;
 @Builder
 public class StatisticInfo {
     List<TransactionDto> transactions;
+    byte[] diagramPng;
 }

@@ -68,6 +68,11 @@
             <artifactId>postgresql</artifactId>
             <version>42.7.2</version>
         </dependency>
+        <!-- Diagrams -->
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.3</version>
         <!-- Others -->
         <dependency>
             <groupId>org.projectlombok</groupId>

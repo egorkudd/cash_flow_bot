@@ -2,13 +2,7 @@ package com.ked.tg.entities;
 
 import com.ked.interaction.enums.EConversation;
 import com.ked.interaction.enums.EConversationStep;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
