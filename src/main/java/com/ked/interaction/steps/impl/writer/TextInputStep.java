@@ -1,6 +1,5 @@
 package com.ked.interaction.steps.impl.writer;
 
-import com.ked.interaction.enums.EConversationStep;
 import com.ked.interaction.steps.InputStep;
 import com.ked.tg.dto.MessageDto;
 import com.ked.tg.dto.ResultDto;
@@ -11,7 +10,6 @@ import com.ked.tg.services.BotMessageService;
 import com.ked.tg.services.BotUserService;
 import com.ked.tg.utils.MessageUtil;
 import com.ked.tg.utils.ValidUtil;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -19,11 +17,12 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 @Component
 @RequiredArgsConstructor
 public class TextInputStep extends InputStep {
-    @Getter
-    private final EConversationStep name = EConversationStep.BOT_MESSAGE_TEXT_INPUT;
     private final BotMessageService botMessageService;
+
     private final BotUserService botUserService;
+
     private static final String PREPARE_MESSAGE_TEXT = "Введите текст, который необходимо отобразить в сообщении";
+
     private static final String ANSWER_MESSAGE_TEXT = "Текст добавлен";
 
     @Override

@@ -1,6 +1,5 @@
 package com.ked.interaction.steps;
 
-import com.ked.interaction.enums.EConversationStep;
 import com.ked.tg.builders.MessageBuilder;
 import com.ked.tg.dto.MessageDto;
 import com.ked.tg.entities.TgChat;
@@ -10,8 +9,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 public abstract class ConversationStep {
-    public abstract EConversationStep getName();
-
     public abstract void prepare(TgChat tgChat, AbsSender sender) throws AbstractBotException;
 
     public abstract int execute(TgChat tgChat, MessageDto messageDto, AbsSender sender) throws AbstractBotException;

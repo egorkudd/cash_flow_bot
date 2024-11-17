@@ -1,6 +1,5 @@
 package com.ked.interaction.steps.impl.writer;
 
-import com.ked.interaction.enums.EConversationStep;
 import com.ked.interaction.steps.ChoiceStep;
 import com.ked.tg.dto.MessageDto;
 import com.ked.tg.dto.ResultDto;
@@ -11,7 +10,6 @@ import com.ked.tg.mappers.KeyboardMapper;
 import com.ked.tg.utils.ButtonUtil;
 import com.ked.tg.utils.StepUtil;
 import com.ked.tg.utils.ValidUtil;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -19,9 +17,8 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 @Component
 @RequiredArgsConstructor
 public class ButtonAddChoiceStep extends ChoiceStep {
-    @Getter
-    private final EConversationStep name = EConversationStep.BOT_MESSAGE_BUTTON_ADD_CHOICE;
     private final KeyboardMapper keyboardMapper;
+
     private static final String PREPARE_MESSAGE_TEXT = "Вы хотите добавить кнопку-ссылку?";
 
     @Override

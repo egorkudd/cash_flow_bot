@@ -1,6 +1,10 @@
-package com.ked.interaction.steps.impl.user.configure;
+package com.ked.interaction.steps.impl.user.add_transaction;
 
-import com.ked.interaction.enums.EConfig;
+import com.ked.core.entities.Category;
+import com.ked.core.entities.User;
+import com.ked.core.services.CategoryService;
+import com.ked.core.services.TransactionService;
+import com.ked.core.services.UserService;
 import com.ked.interaction.steps.ChoiceStep;
 import com.ked.tg.dto.ButtonDto;
 import com.ked.tg.dto.KeyboardDto;
@@ -21,15 +25,22 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class ConfigureChoiceStep extends ChoiceStep {
-    private static final String PREPARE_MESSAGE_TEXT = "Что вы хотите изменить";
+public class TransactionCategoryChoiceStep extends ChoiceStep {
+    private static final String PREPARE_MESSAGE_TEXT = "Выберите категорию транзакции";
+
+    private final TransactionService transactionService;
+
+    private final CategoryService categoryService;
+
+    private final UserService userService;
 
     private final KeyboardMapper keyboardMapper;
+
 
     @Override
     protected ResultDto isValidData(MessageDto messageDto) throws EntityNotFoundBotException {
         if (!ValidUtil.isCallback(messageDto.getEMessage()) ||
-                !EConfig.isExists(messageDto.getData())
+                !categoryService.exists(Long.valueOf(messageDto.getData()))
         ) {
             return new ResultDto(false, EXCEPTION_MESSAGE_TEXT);
         }
@@ -46,18 +57,17 @@ public class ConfigureChoiceStep extends ChoiceStep {
 
     @Override
     protected int finishStep(TgChat tgChat, AbsSender sender, String data) throws AbstractBotException {
-        if (EConfig.NAME.toString().equals(data)) {
-            return 0;
-        }
-
-        return 1;
+        User user = userService.findByTgId(tgChat.getChatId());
+        transactionService.setCategory(data, user.getId());
+        return 0;
     }
 
     private KeyboardDto getKeyboardDto(TgChat tgChat) {
-        EConfig[] eConfigArray = EConfig.values();
+        User user = userService.findByTgId(tgChat.getChatId());
+        List<Category> categoryList = categoryService.findAllByUserIdToChoose(user.getId());
         List<ButtonDto> buttonDtoList = new ArrayList<>();
-        for (EConfig eConfig : eConfigArray) {
-            buttonDtoList.add(new ButtonDto(eConfig.toString(), eConfig.getValue()));
+        for (Category category : categoryList) {
+            buttonDtoList.add(new ButtonDto(category.getId().toString(), category.getName()));
         }
 
         return keyboardMapper.keyboardDto(tgChat, buttonDtoList);

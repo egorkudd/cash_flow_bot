@@ -1,6 +1,5 @@
 package com.ked.interaction.steps.impl.writer;
 
-import com.ked.interaction.enums.EConversationStep;
 import com.ked.interaction.steps.ChoiceStep;
 import com.ked.tg.dto.MessageDto;
 import com.ked.tg.dto.ResultDto;
@@ -14,7 +13,6 @@ import com.ked.tg.utils.ButtonUtil;
 import com.ked.tg.utils.StepUtil;
 import com.ked.tg.utils.ValidUtil;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -22,11 +20,12 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 @Component
 @RequiredArgsConstructor
 public class ChatTypeChoiceStep extends ChoiceStep {
-    @Getter
-    private final EConversationStep name = EConversationStep.BOT_MESSAGE_TYPE_CHOICE;
     private final KeyboardMapper keyboardMapper;
+
     private final BotMessageService botMessageService;
+
     private final BotUserService botUserService;
+
     private static final String PREPARE_MESSAGE_TEXT = "Вы хотите разослать это ссобщение только участникамм конкретного мероприятия?";
 
     @Override
