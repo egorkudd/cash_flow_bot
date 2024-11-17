@@ -10,8 +10,9 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 @Component
 public class InfoCommand extends BotCommand {
     private final String MESSAGE = """
-            ️☀️ Хорошего дня ☀️
-            """;
+            Откройте меню в левом нижнем углу и выберите необходимую команду
+            Перед добавлением доходов/расходов создайте категории, в которые будете их добавлять
+             """;
 
     public InfoCommand() {
         super("info", "Information command");
