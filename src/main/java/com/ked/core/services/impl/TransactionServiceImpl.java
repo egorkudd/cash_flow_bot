@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -78,7 +79,7 @@ public class TransactionServiceImpl implements TransactionService {
         checkUser(userId);
 
         Transaction transaction = getCollectingTransactionByUserId(userId);
-        transaction.setCreatedAt(new Date());
+        transaction.setCreatedAt(Instant.now());
         transactionRepository.saveAndFlush(transaction);
     }
 
