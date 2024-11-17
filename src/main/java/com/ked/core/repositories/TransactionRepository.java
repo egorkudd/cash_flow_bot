@@ -15,6 +15,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Optional<Transaction> findByUserIdAndCreatedAtIsNull(Long userId);
 
     List<Transaction> findByUserIdAndCreatedAt(Long userId, Instant dateTime);
+
     @Query("SELECT t FROM Transaction t WHERE t.userId = :userId AND t.createdAt BETWEEN :startDate AND :endDate")
     List<Transaction> findByUserIdAndCreatedAtBetween(
             @Param("userId") Long userId,

@@ -1,6 +1,5 @@
 package com.ked.interaction.enums;
 
-import com.ked.core.enums.ETransaction;
 import lombok.Getter;
 
 import java.util.Arrays;

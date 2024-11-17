@@ -2,7 +2,6 @@ package com.ked.core.services.impl;
 
 import com.ked.core.dto.StatisticInfo;
 import com.ked.core.dto.TransactionDto;
-import com.ked.core.entities.Transaction;
 import com.ked.core.enums.ETimeInterval;
 import com.ked.core.mappers.TransactionMapper;
 import com.ked.core.repositories.TransactionRepository;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jvnet.hk2.annotations.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,7 +53,8 @@ public class StatisticServiceImpl implements StatisticService {
         List<TransactionDto> transactions = transactionRepository
                 .findByUserIdAndCreatedAtBetween(userId, startDate, endDate).stream()
                 .map(transactionMapper::toDto)
-                .toList();;
+                .toList();
+        ;
         return StatisticInfo.builder()
                 .transactions(transactions)
                 .build();

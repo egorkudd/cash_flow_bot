@@ -7,9 +7,10 @@ import com.ked.interaction.conversations.impl.SendBotMessageConversation;
 import com.ked.interaction.enums.EConversation;
 import com.ked.interaction.enums.EConversationStep;
 import com.ked.interaction.steps.ConversationStep;
-import com.ked.interaction.steps.impl.user.add_transaction.TransactionCategoryChoice;
+import com.ked.interaction.steps.impl.user.add_transaction.TransactionCategoryChoiceStep;
 import com.ked.interaction.steps.impl.user.add_transaction.TransactionInputStep;
 import com.ked.interaction.steps.impl.user.add_transaction.TransactionTypeChoiceStep;
+import com.ked.interaction.steps.impl.user.configure.CategoryChoiceStep;
 import com.ked.interaction.steps.impl.user.configure.CategoryNameInputStep;
 import com.ked.interaction.steps.impl.user.configure.CategoryTypeChoiceStep;
 import com.ked.interaction.steps.impl.user.configure.ChangeUserNameInputStep;
@@ -51,7 +52,7 @@ public class ConversationConfig {
             @Autowired ChatTypeChoiceStep chatTypeChoiceStep,
 
             @Autowired TransactionTypeChoiceStep transactionTypeChoiceStep,
-            @Autowired TransactionCategoryChoice transactionCategoryChoice,
+            @Autowired TransactionCategoryChoiceStep transactionCategoryChoiceStep,
             @Autowired TransactionInputStep transactionInputStep,
 
             @Autowired ConfigureChoiceStep configureChoiceStep,
@@ -59,27 +60,30 @@ public class ConversationConfig {
             @Autowired ConfigureCategoryActionChoiceStep configureCategoryActionChoiceStep,
             @Autowired CategoryTypeChoiceStep categoryTypeChoiceStep,
             @Autowired CategoryNameInputStep categoryNameInputStep,
+            @Autowired CategoryChoiceStep categoryChoiceStep,
 
             @Autowired ChangeUserNameInputStep changeUserNameInputStep
-            ) {
+    ) {
         return new HashMap<>() {{
-            put(textInputStep.getName(), textInputStep);
-            put(buttonAddChoiceStep.getName(), buttonAddChoiceStep);
-            put(buttonInputStep.getName(), buttonInputStep);
-            put(sendBotMessageChoiceStep.getName(), sendBotMessageChoiceStep);
-            put(chatTypeChoiceStep.getName(), chatTypeChoiceStep);
+            put(EConversationStep.BOT_MESSAGE_TEXT_INPUT, textInputStep);
+            put(EConversationStep.BOT_MESSAGE_BUTTON_ADD_CHOICE, buttonAddChoiceStep);
+            put(EConversationStep.BOT_MESSAGE_BUTTON_INPUT, buttonInputStep);
+            put(EConversationStep.BOT_MESSAGE_SEND_CHOICE, sendBotMessageChoiceStep);
+            put(EConversationStep.BOT_MESSAGE_TYPE_CHOICE, chatTypeChoiceStep);
 
-            put(transactionTypeChoiceStep.getName(), transactionTypeChoiceStep);
-            put(transactionCategoryChoice.getName(), transactionCategoryChoice);
-            put(transactionInputStep.getName(), transactionInputStep);
+            put(EConversationStep.TRANSACTION_TYPE_CHOICE, transactionTypeChoiceStep);
+            put(EConversationStep.TRANSACTION_CATEGORY_CHOICE, transactionCategoryChoiceStep);
+            put(EConversationStep.TRANSACTION_INPUT, transactionInputStep);
 
-            put(configureChoiceStep.getName(), configureChoiceStep);
+            put(EConversationStep.CONFIGURE_CHOICE, configureChoiceStep);
 
-            put(configureCategoryActionChoiceStep.getName(), configureCategoryActionChoiceStep);
-            put(categoryTypeChoiceStep.getName(), categoryTypeChoiceStep);
-            put(categoryNameInputStep.getName(), categoryNameInputStep);
+            put(EConversationStep.CONFIGURE_CATEGORY_ACTION_CHOICE, configureCategoryActionChoiceStep);
+            put(EConversationStep.CATEGORY_TYPE_CHOICE, categoryTypeChoiceStep);
+            put(EConversationStep.CATEGORY_NAME_INPUT, categoryNameInputStep);
+            put(EConversationStep.CATEGORY_CHOICE, categoryChoiceStep);
+            put(EConversationStep.CATEGORY_NEW_NAME_INPUT, categoryNameInputStep);
 
-            put(changeUserNameInputStep.getName(), changeUserNameInputStep);
+            put(EConversationStep.CHANGE_USERNAME_INPUT, changeUserNameInputStep);
         }};
     }
 }

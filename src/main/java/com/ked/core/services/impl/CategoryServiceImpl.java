@@ -8,11 +8,11 @@ import com.ked.core.repositories.TransactionRepository;
 import com.ked.core.repositories.UserRepository;
 import com.ked.core.services.CategoryService;
 import com.ked.tg.exceptions.EntityNotFoundBotException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,6 +67,16 @@ public class CategoryServiceImpl implements CategoryService {
         category.setCreatedAt(Instant.now());
         categoryRepository.saveAndFlush(category);
     }
+
+    @Override
+    public void deleteCreatedAt(String idStr) {
+        Category category = categoryRepository.findById(Long.parseLong(idStr)).orElseThrow(() ->
+                new EntityNotFoundException("Не существует категории ID=".concat(idStr))
+        );
+        category.setCreatedAt(null);
+        categoryRepository.saveAndFlush(category);
+    }
+
 
     private Category getCollectingCategoryByUserId(Long userId) {
         Category category;

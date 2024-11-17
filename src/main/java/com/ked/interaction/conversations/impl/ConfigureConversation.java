@@ -35,13 +35,16 @@ public class ConfigureConversation extends AConversation {
             }});
             put(EConversationStep.CONFIGURE_CATEGORY_ACTION_CHOICE, new ArrayList<>() {{
                 add(EConversationStep.CATEGORY_TYPE_CHOICE);
-                add(EConversationStep.CATEGORY_NEW_NAME_INPUT);
+                add(EConversationStep.CATEGORY_CHOICE);
             }});
             put(EConversationStep.CATEGORY_TYPE_CHOICE, new ArrayList<>() {{
                 add(EConversationStep.CATEGORY_NAME_INPUT);
             }});
             put(EConversationStep.CATEGORY_NAME_INPUT, new ArrayList<>() {{
                 add(null);
+            }});
+            put(EConversationStep.CATEGORY_CHOICE, new ArrayList<>() {{
+                add(EConversationStep.CATEGORY_NEW_NAME_INPUT);
             }});
             put(EConversationStep.CATEGORY_NEW_NAME_INPUT, new ArrayList<>() {{
                 add(null);

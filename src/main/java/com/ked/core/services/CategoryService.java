@@ -16,4 +16,6 @@ public interface CategoryService {
     void setType(String type, Long userId);
 
     void setCreatedAt(Long userId);
+
+    void deleteCreatedAt(String idStr);
 }

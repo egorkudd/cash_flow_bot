@@ -57,7 +57,7 @@ public class CategoryChoiceStep extends ChoiceStep {
 
     @Override
     protected int finishStep(TgChat tgChat, AbsSender sender, String data) throws AbstractBotException {
-        transactionService.deleteCreatedAt(data);
+        categoryService.deleteCreatedAt(data);
         return 0;
     }
 

@@ -24,7 +24,7 @@ public class CommandConfig {
 
             @Autowired AddTransactionCommand addTransactionCommand,
             @Autowired ConfigureCommand configureCommand
-            ) {
+    ) {
         CommandRegistry commandRegistry = new CommandRegistry(true, () -> name);
 
         commandRegistry.register(startCommand);
