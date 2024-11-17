@@ -1,6 +1,7 @@
 package com.ked.interaction.configs;
 
 import com.ked.interaction.commands.AddTransactionCommand;
+import com.ked.interaction.commands.ConfigureCommand;
 import com.ked.interaction.commands.InfoCommand;
 import com.ked.interaction.commands.SendBotMessageCommand;
 import com.ked.interaction.commands.StartCommand;
@@ -21,7 +22,8 @@ public class CommandConfig {
             @Autowired InfoCommand infoCommand,
             @Autowired SendBotMessageCommand sendBotMessageCommand,
 
-            @Autowired AddTransactionCommand addTransactionCommand
+            @Autowired AddTransactionCommand addTransactionCommand,
+            @Autowired ConfigureCommand configureCommand
             ) {
         CommandRegistry commandRegistry = new CommandRegistry(true, () -> name);
 
@@ -30,6 +32,7 @@ public class CommandConfig {
         commandRegistry.register(sendBotMessageCommand);
 
         commandRegistry.register(addTransactionCommand);
+        commandRegistry.register(configureCommand);
 
         return commandRegistry;
     }

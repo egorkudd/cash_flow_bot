@@ -1,6 +1,5 @@
 package com.ked.interaction.commands;
 
-import com.ked.core.services.TransactionService;
 import com.ked.interaction.enums.EConversation;
 import com.ked.tg.exceptions.AbstractBotException;
 import com.ked.tg.services.ConversationService;
@@ -16,15 +15,10 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 @Component
 public class AddTransactionCommand extends BotCommand {
     private final ConversationService conversationService;
-    private final TransactionService transactionService;
 
-    public AddTransactionCommand(
-            ConversationService conversationService,
-            TransactionService transactionService
-    ) {
+    public AddTransactionCommand(ConversationService conversationService) {
         super("add_transaction", "Add transaction");
         this.conversationService = conversationService;
-        this.transactionService = transactionService;
     }
 
     @Override
@@ -41,9 +35,3 @@ public class AddTransactionCommand extends BotCommand {
         conversationService.startConversation(chatId, EConversation.ADD_TRANSACTION, absSender);
     }
 }
-//    TODO : создать диалог
-    /*
-    выберите доход/расход
-    выберите категорию
-    впишите сумму (через пробле можно вписать комментарий)
-     */

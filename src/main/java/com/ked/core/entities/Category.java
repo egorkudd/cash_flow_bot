@@ -14,6 +14,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Setter
 @Getter
 @Entity
@@ -30,4 +32,7 @@ public class Category {
 
     @Enumerated(EnumType.STRING)
     private ETransaction type;
+
+    @Column(name = "created_at")
+    private Date createdAt;
 }

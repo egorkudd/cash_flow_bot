@@ -1,9 +1,7 @@
-package com.ked.interaction.steps.impl.user.add_transaction;
+package com.ked.interaction.steps.impl.user.configure;
 
-import com.ked.core.entities.User;
 import com.ked.core.enums.ETransaction;
-import com.ked.core.services.TransactionService;
-import com.ked.core.services.UserService;
+import com.ked.interaction.enums.EConfig;
 import com.ked.interaction.enums.EConversationStep;
 import com.ked.interaction.steps.ChoiceStep;
 import com.ked.tg.dto.ButtonDto;
@@ -26,22 +24,18 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class TransactionTypeChoiceStep extends ChoiceStep {
+public class ConfigureChoiceStep extends ChoiceStep {
     @Getter
-    private final EConversationStep name = EConversationStep.TRANSACTION_TYPE_CHOICE;
+    private final EConversationStep name = EConversationStep.CONFIGURE_CHOICE;
 
-    private static final String PREPARE_MESSAGE_TEXT = "Выберите тип транзакции";
+    private static final String PREPARE_MESSAGE_TEXT = "Что вы хотите изменить";
 
     private final KeyboardMapper keyboardMapper;
 
-    private final TransactionService transactionService;
-
-    private final UserService userService;
-
     @Override
     protected ResultDto isValidData(MessageDto messageDto) throws EntityNotFoundBotException {
-        if (!ValidUtil.isCallback(messageDto.getEMessage())
-                || !ETransaction.isExists(messageDto.getData())
+        if (!ValidUtil.isCallback(messageDto.getEMessage()) ||
+                !EConfig.isExists(messageDto.getData())
         ) {
             return new ResultDto(false, EXCEPTION_MESSAGE_TEXT);
         }
@@ -58,16 +52,18 @@ public class TransactionTypeChoiceStep extends ChoiceStep {
 
     @Override
     protected int finishStep(TgChat tgChat, AbsSender sender, String data) throws AbstractBotException {
-        User user = userService.findByTgId(tgChat.getChatId());
-        transactionService.setType(data, user.getId());
-        return 0;
+        if (EConfig.NAME.toString().equals(data)) {
+            return 0;
+        }
+
+        return 1;
     }
 
     private KeyboardDto getKeyboardDto(TgChat tgChat) {
-        ETransaction[] eTransactionArray = ETransaction.values();
+        EConfig[] eConfigArray = EConfig.values();
         List<ButtonDto> buttonDtoList = new ArrayList<>();
-        for (ETransaction eTransaction : eTransactionArray) {
-            buttonDtoList.add(new ButtonDto(eTransaction.toString(), eTransaction.getValue()));
+        for (EConfig eConfig : eConfigArray) {
+            buttonDtoList.add(new ButtonDto(eConfig.toString(), eConfig.getValue()));
         }
 
         return keyboardMapper.keyboardDto(tgChat, buttonDtoList);

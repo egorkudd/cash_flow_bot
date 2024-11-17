@@ -1,8 +1,8 @@
-package com.ked.interaction.steps.impl.user.add_transaction;
+package com.ked.interaction.steps.impl.user.configure;
 
 import com.ked.core.entities.User;
 import com.ked.core.enums.ETransaction;
-import com.ked.core.services.TransactionService;
+import com.ked.core.services.CategoryService;
 import com.ked.core.services.UserService;
 import com.ked.interaction.enums.EConversationStep;
 import com.ked.interaction.steps.ChoiceStep;
@@ -26,22 +26,22 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class TransactionTypeChoiceStep extends ChoiceStep {
+public class CategoryTypeChoiceStep extends ChoiceStep {
     @Getter
-    private final EConversationStep name = EConversationStep.TRANSACTION_TYPE_CHOICE;
+    private final EConversationStep name = EConversationStep.CATEGORY_TYPE_CHOICE;
 
-    private static final String PREPARE_MESSAGE_TEXT = "Выберите тип транзакции";
+    private static final String PREPARE_MESSAGE_TEXT = "Выберите тип категории";
 
-    private final KeyboardMapper keyboardMapper;
-
-    private final TransactionService transactionService;
+    private final CategoryService categoryService;
 
     private final UserService userService;
 
+    private final KeyboardMapper keyboardMapper;
+
     @Override
     protected ResultDto isValidData(MessageDto messageDto) throws EntityNotFoundBotException {
-        if (!ValidUtil.isCallback(messageDto.getEMessage())
-                || !ETransaction.isExists(messageDto.getData())
+        if (!ValidUtil.isCallback(messageDto.getEMessage()) ||
+                !ETransaction.isExists(messageDto.getData())
         ) {
             return new ResultDto(false, EXCEPTION_MESSAGE_TEXT);
         }
@@ -59,7 +59,7 @@ public class TransactionTypeChoiceStep extends ChoiceStep {
     @Override
     protected int finishStep(TgChat tgChat, AbsSender sender, String data) throws AbstractBotException {
         User user = userService.findByTgId(tgChat.getChatId());
-        transactionService.setType(data, user.getId());
+        categoryService.setType(data, user.getId());
         return 0;
     }
 

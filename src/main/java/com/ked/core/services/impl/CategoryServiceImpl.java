@@ -5,10 +5,13 @@ import com.ked.core.entities.Transaction;
 import com.ked.core.enums.ETransaction;
 import com.ked.core.repositories.CategoryRepository;
 import com.ked.core.repositories.TransactionRepository;
+import com.ked.core.repositories.UserRepository;
 import com.ked.core.services.CategoryService;
+import com.ked.tg.exceptions.EntityNotFoundBotException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +20,7 @@ import java.util.Optional;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
 
     @Override
     public List<Category> findAllByUserIdToChoose(Long userId) {
@@ -34,5 +38,51 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public boolean exists(Long categoryId) {
         return categoryRepository.existsById(categoryId);
+    }
+
+    @Override
+    public void setName(String name, Long userId) {
+        checkUser(userId);
+
+        Category category = getCollectingCategoryByUserId(userId);
+        category.setName(name);
+        categoryRepository.saveAndFlush(category);
+    }
+
+    @Override
+    public void setType(String type, Long userId) {
+        checkUser(userId);
+
+        Category category = getCollectingCategoryByUserId(userId);
+        category.setType(ETransaction.valueOf(type));
+        categoryRepository.saveAndFlush(category);
+    }
+
+    @Override
+    public void setCreatedAt(Long userId) {
+        checkUser(userId);
+
+        Category category = getCollectingCategoryByUserId(userId);
+        category.setCreatedAt(new Date());
+        categoryRepository.saveAndFlush(category);
+    }
+
+    private Category getCollectingCategoryByUserId(Long userId) {
+        Category category;
+        Optional<Category> categoryOpt = categoryRepository.findByUserIdAndCreatedAtIsNull(userId);
+        if (categoryOpt.isPresent()) {
+            category = categoryOpt.get();
+        } else {
+            category = new Category();
+            category.setUserId(userId);
+        }
+
+        return category;
+    }
+
+    private void checkUser(Long userId) throws EntityNotFoundBotException {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundBotException("Не существует пользователя ID=".concat(String.valueOf(userId)));
+        }
     }
 }
