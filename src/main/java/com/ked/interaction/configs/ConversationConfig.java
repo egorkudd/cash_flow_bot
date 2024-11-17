@@ -4,6 +4,7 @@ import com.ked.interaction.conversations.AConversation;
 import com.ked.interaction.conversations.impl.AddTransactionConversation;
 import com.ked.interaction.conversations.impl.ConfigureConversation;
 import com.ked.interaction.conversations.impl.SendBotMessageConversation;
+import com.ked.interaction.conversations.impl.StatisticConversation;
 import com.ked.interaction.enums.EConversation;
 import com.ked.interaction.enums.EConversationStep;
 import com.ked.interaction.steps.ConversationStep;
@@ -11,8 +12,18 @@ import com.ked.interaction.steps.impl.user.add_transaction.TransactionCategoryCh
 import com.ked.interaction.steps.impl.user.add_transaction.TransactionInputStep;
 import com.ked.interaction.steps.impl.user.add_transaction.TransactionTypeChoiceStep;
 import com.ked.interaction.steps.impl.user.configure.CategoryChoiceStep;
-import com.ked.interaction.steps.impl.user.configure.*;
-import com.ked.interaction.steps.impl.writer.*;
+import com.ked.interaction.steps.impl.user.configure.CategoryNameInputStep;
+import com.ked.interaction.steps.impl.user.configure.CategoryTypeChoiceStep;
+import com.ked.interaction.steps.impl.user.configure.ChangeUserNameInputStep;
+import com.ked.interaction.steps.impl.user.configure.ConfigureCategoryActionChoiceStep;
+import com.ked.interaction.steps.impl.user.configure.ConfigureChoiceStep;
+import com.ked.interaction.steps.impl.user.statistic.StatisticLastDateInputStep;
+import com.ked.interaction.steps.impl.user.statistic.StatisticPeriodChoiceStep;
+import com.ked.interaction.steps.impl.writer.ButtonAddChoiceStep;
+import com.ked.interaction.steps.impl.writer.ButtonInputStep;
+import com.ked.interaction.steps.impl.writer.ChatTypeChoiceStep;
+import com.ked.interaction.steps.impl.writer.SendBotMessageChoiceStep;
+import com.ked.interaction.steps.impl.writer.TextInputStep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,12 +37,14 @@ public class ConversationConfig {
     public Map<EConversation, AConversation> conversationMap(
             @Autowired SendBotMessageConversation sendBotMessageConversation,
             @Autowired AddTransactionConversation addTransactionConversation,
-            @Autowired ConfigureConversation configureConversation
-    ) {
+            @Autowired ConfigureConversation configureConversation,
+            @Autowired StatisticConversation statisticConversation
+            ) {
         return new HashMap<>() {{
             put(sendBotMessageConversation.getName(), sendBotMessageConversation);
             put(addTransactionConversation.getName(), addTransactionConversation);
             put(configureConversation.getName(), configureConversation);
+            put(statisticConversation.getName(), statisticConversation);
         }};
     }
 
@@ -54,8 +67,11 @@ public class ConversationConfig {
             @Autowired CategoryNameInputStep categoryNameInputStep,
             @Autowired CategoryChoiceStep categoryChoiceStep,
 
-            @Autowired ChangeUserNameInputStep changeUserNameInputStep
-    ) {
+            @Autowired ChangeUserNameInputStep changeUserNameInputStep,
+
+            @Autowired StatisticPeriodChoiceStep statisticPeriodChoiceStep,
+            @Autowired StatisticLastDateInputStep statisticLastDateInputStep
+            ) {
         return new HashMap<>() {{
             put(EConversationStep.BOT_MESSAGE_TEXT_INPUT, textInputStep);
             put(EConversationStep.BOT_MESSAGE_BUTTON_ADD_CHOICE, buttonAddChoiceStep);
@@ -76,6 +92,9 @@ public class ConversationConfig {
             put(EConversationStep.CATEGORY_NEW_NAME_INPUT, categoryNameInputStep);
 
             put(EConversationStep.CHANGE_USERNAME_INPUT, changeUserNameInputStep);
+
+            put(EConversationStep.STATISTIC_PERIOD_CHOICE, statisticPeriodChoiceStep);
+            put(EConversationStep.STATISTIC_LAST_DATE_INPUT, statisticLastDateInputStep);
         }};
     }
 }

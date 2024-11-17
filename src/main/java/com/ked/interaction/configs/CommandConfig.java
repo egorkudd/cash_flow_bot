@@ -1,6 +1,11 @@
 package com.ked.interaction.configs;
 
-import com.ked.interaction.commands.*;
+import com.ked.interaction.commands.AddTransactionCommand;
+import com.ked.interaction.commands.ConfigureCommand;
+import com.ked.interaction.commands.InfoCommand;
+import com.ked.interaction.commands.SendBotMessageCommand;
+import com.ked.interaction.commands.StartCommand;
+import com.ked.interaction.commands.StatisticCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +24,8 @@ public class CommandConfig {
             @Autowired SendBotMessageCommand sendBotMessageCommand,
 
             @Autowired AddTransactionCommand addTransactionCommand,
-            @Autowired ConfigureCommand configureCommand
+            @Autowired ConfigureCommand configureCommand,
+            @Autowired StatisticCommand statisticCommand
     ) {
         CommandRegistry commandRegistry = new CommandRegistry(true, () -> name);
 
@@ -29,6 +35,7 @@ public class CommandConfig {
 
         commandRegistry.register(addTransactionCommand);
         commandRegistry.register(configureCommand);
+        commandRegistry.register(statisticCommand);
 
         return commandRegistry;
     }

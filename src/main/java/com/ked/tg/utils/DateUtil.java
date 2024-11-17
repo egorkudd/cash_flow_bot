@@ -4,6 +4,7 @@ import com.ked.tg.dto.ResultDto;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -11,6 +12,10 @@ import java.util.TimeZone;
 public class DateUtil {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
     private static final int MAX_AGE = 122;
+
+    public static boolean isValidDate(String dateStr) {
+        return convertDate(dateStr) != null;
+    }
 
     public static ResultDto isValidBirthday(String birthdayStr) {
         Date date = DateUtil.convertDate(birthdayStr);
@@ -30,13 +35,30 @@ public class DateUtil {
         return new Date().after(birthday) && yearCount < MAX_AGE;
     }
 
-    public static Date convertDate(String birthdayStr) {
+    public static Date convertDate(String dateStr) {
         try {
-            return DATE_FORMAT.parse(birthdayStr);
+            return DATE_FORMAT.parse(dateStr);
         } catch (ParseException ignored) {
         }
 
         return null;
+    }
+
+    public static Instant convertInstant(String dateStr) {
+        try {
+            return DATE_FORMAT.parse(dateStr).toInstant();
+        } catch (ParseException ignored) {
+        }
+
+        return null;
+    }
+
+    public static String convertDate(Date date) {
+        return DATE_FORMAT.format(date);
+    }
+
+    public static String convertDate(Instant instant) {
+        return DATE_FORMAT.format(Date.from(instant));
     }
 
     public static int getYearCountByDate(Date date) {
