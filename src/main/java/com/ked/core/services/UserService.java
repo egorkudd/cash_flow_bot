@@ -13,4 +13,6 @@ public interface UserService {
     User create(long chatId, String name);
 
     void changeUsername(String username, Long tgId) throws EntityNotFoundBotException;
+
+    User findById(Long userId) throws EntityNotFoundBotException;
 }

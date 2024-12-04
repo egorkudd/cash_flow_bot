@@ -36,4 +36,11 @@ public class UserServiceImpl implements UserService {
         user.setName(username);
         userRepository.saveAndFlush(user);
     }
+
+    @Override
+    public User findById(Long userId) throws EntityNotFoundBotException {
+        return userRepository.findById(userId).orElseThrow(() ->
+                new EntityNotFoundException("Не существует пользователя ID=".concat(String.valueOf(userId)))
+        );
+    }
 }

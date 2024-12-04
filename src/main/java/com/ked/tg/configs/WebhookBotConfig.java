@@ -25,7 +25,7 @@ public class WebhookBotConfig {
     private String webhookPath;
 
     @Bean
-    public MyWebHookBot bot(UpdateHandleService updateHandleService) {
+    public MyWebHookBot tgWebhookBot(UpdateHandleService updateHandleService) {
         if (isWebhookBotEnabled) {
             MyWebHookBot bot = new MyWebHookBot(token, SetWebhook.builder().url(webhookPath).build());
             bot.setBotPath(webhookPath);
