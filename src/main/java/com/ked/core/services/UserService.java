@@ -14,5 +14,11 @@ public interface UserService {
 
     void changeUsername(String username, Long tgId) throws EntityNotFoundBotException;
 
+    void setEmail(String email, Long tgId) throws EntityNotFoundBotException;
+
+    void setPassword(String password, Long tgId) throws EntityNotFoundBotException;
+
     User findById(Long userId) throws EntityNotFoundBotException;
+
+    boolean existsByEmail(String email);
 }

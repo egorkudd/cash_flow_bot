@@ -5,7 +5,6 @@ import com.ked.core.entities.Statistic;
 import com.ked.core.enums.ETimeInterval;
 import org.springframework.stereotype.Service;
 
-
 import java.time.Instant;
 
 @Service

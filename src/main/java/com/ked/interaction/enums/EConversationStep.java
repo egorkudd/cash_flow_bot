@@ -23,4 +23,7 @@ public enum EConversationStep {
 
     STATISTIC_PERIOD_CHOICE,
     STATISTIC_LAST_DATE_INPUT,
+
+    EMAIL_INPUT,
+    PASSWORD_INPUT,
 }

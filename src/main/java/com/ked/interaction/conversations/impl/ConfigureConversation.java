@@ -29,9 +29,16 @@ public class ConfigureConversation extends AConversation {
             put(EConversationStep.CONFIGURE_CHOICE, new ArrayList<>() {{
                 add(EConversationStep.CHANGE_USERNAME_INPUT);
                 add(EConversationStep.CONFIGURE_CATEGORY_ACTION_CHOICE);
+                add((EConversationStep.EMAIL_INPUT));
                 add(null);
             }});
             put(EConversationStep.CHANGE_USERNAME_INPUT, new ArrayList<>() {{
+                add(null);
+            }});
+            put(EConversationStep.EMAIL_INPUT, new ArrayList<>() {{
+                add(EConversationStep.PASSWORD_INPUT);
+            }});
+            put(EConversationStep.PASSWORD_INPUT, new ArrayList<>() {{
                 add(null);
             }});
             put(EConversationStep.CONFIGURE_CATEGORY_ACTION_CHOICE, new ArrayList<>() {{

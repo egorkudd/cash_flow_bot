@@ -3,7 +3,6 @@ package com.ked.interaction.steps.impl.user.configure;
 import com.ked.core.entities.Category;
 import com.ked.core.entities.User;
 import com.ked.core.services.CategoryService;
-import com.ked.core.services.TransactionService;
 import com.ked.core.services.UserService;
 import com.ked.interaction.steps.ChoiceStep;
 import com.ked.tg.dto.ButtonDto;

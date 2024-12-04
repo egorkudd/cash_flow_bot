@@ -17,6 +17,8 @@ import com.ked.interaction.steps.impl.user.configure.CategoryTypeChoiceStep;
 import com.ked.interaction.steps.impl.user.configure.ChangeUserNameInputStep;
 import com.ked.interaction.steps.impl.user.configure.ConfigureCategoryActionChoiceStep;
 import com.ked.interaction.steps.impl.user.configure.ConfigureChoiceStep;
+import com.ked.interaction.steps.impl.user.configure.EmailInputStep;
+import com.ked.interaction.steps.impl.user.configure.PasswordInputStep;
 import com.ked.interaction.steps.impl.user.statistic.StatisticLastDateInputStep;
 import com.ked.interaction.steps.impl.user.statistic.StatisticPeriodChoiceStep;
 import com.ked.interaction.steps.impl.writer.ButtonAddChoiceStep;
@@ -39,7 +41,7 @@ public class ConversationConfig {
             @Autowired AddTransactionConversation addTransactionConversation,
             @Autowired ConfigureConversation configureConversation,
             @Autowired StatisticConversation statisticConversation
-            ) {
+    ) {
         return new HashMap<>() {{
             put(sendBotMessageConversation.getName(), sendBotMessageConversation);
             put(addTransactionConversation.getName(), addTransactionConversation);
@@ -70,8 +72,11 @@ public class ConversationConfig {
             @Autowired ChangeUserNameInputStep changeUserNameInputStep,
 
             @Autowired StatisticPeriodChoiceStep statisticPeriodChoiceStep,
-            @Autowired StatisticLastDateInputStep statisticLastDateInputStep
-            ) {
+            @Autowired StatisticLastDateInputStep statisticLastDateInputStep,
+
+            @Autowired EmailInputStep emailInputStep,
+            @Autowired PasswordInputStep passwordInputStep
+    ) {
         return new HashMap<>() {{
             put(EConversationStep.BOT_MESSAGE_TEXT_INPUT, textInputStep);
             put(EConversationStep.BOT_MESSAGE_BUTTON_ADD_CHOICE, buttonAddChoiceStep);
@@ -95,6 +100,9 @@ public class ConversationConfig {
 
             put(EConversationStep.STATISTIC_PERIOD_CHOICE, statisticPeriodChoiceStep);
             put(EConversationStep.STATISTIC_LAST_DATE_INPUT, statisticLastDateInputStep);
+
+            put(EConversationStep.EMAIL_INPUT, emailInputStep);
+            put(EConversationStep.PASSWORD_INPUT, passwordInputStep);
         }};
     }
 }

@@ -5,4 +5,5 @@ public enum EConversation {
     ADD_TRANSACTION,
     CONFIGURE,
     STATISTIC,
+    WEB_REGISTER,
 }

@@ -8,6 +8,7 @@ import java.util.Arrays;
 public enum EConfig {
     NAME("Имя"),
     CATEGORY("Категории"),
+    WEB_REGISTER("Регистрация на платформе"),
     EXIT("Выйти");
 
     private final String value;
