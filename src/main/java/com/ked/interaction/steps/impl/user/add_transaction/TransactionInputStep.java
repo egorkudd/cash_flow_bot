@@ -50,7 +50,13 @@ public class TransactionInputStep extends InputStep {
     @Override
     protected ResultDto isValidData(MessageDto messageDto) {
         try {
-            BigDecimal money = new BigDecimal(messageDto.getData());
+            String moneyStr = messageDto.getData();
+            BigDecimal money = new BigDecimal(moneyStr);
+
+            if (moneyStr.contains(".") && moneyStr.split("\\.")[1].length() > 2) {
+                return new ResultDto(false, EXCEPTION_MESSAGE_TEXT);
+            }
+
             if (MAX_MONEY_VALUE.compareTo(money) > 0) {
                 return new ResultDto(true);
             }
