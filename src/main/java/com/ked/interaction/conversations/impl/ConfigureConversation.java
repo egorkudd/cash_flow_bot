@@ -29,6 +29,7 @@ public class ConfigureConversation extends AConversation {
             put(EConversationStep.CONFIGURE_CHOICE, new ArrayList<>() {{
                 add(EConversationStep.CHANGE_USERNAME_INPUT);
                 add(EConversationStep.CONFIGURE_CATEGORY_ACTION_CHOICE);
+                add(null);
             }});
             put(EConversationStep.CHANGE_USERNAME_INPUT, new ArrayList<>() {{
                 add(null);
@@ -36,9 +37,11 @@ public class ConfigureConversation extends AConversation {
             put(EConversationStep.CONFIGURE_CATEGORY_ACTION_CHOICE, new ArrayList<>() {{
                 add(EConversationStep.CATEGORY_TYPE_CHOICE);
                 add(EConversationStep.CATEGORY_CHOICE);
+                add(null);
             }});
             put(EConversationStep.CATEGORY_TYPE_CHOICE, new ArrayList<>() {{
                 add(EConversationStep.CATEGORY_NAME_INPUT);
+                add(null);
             }});
             put(EConversationStep.CATEGORY_NAME_INPUT, new ArrayList<>() {{
                 add(null);

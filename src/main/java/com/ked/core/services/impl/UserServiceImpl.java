@@ -26,8 +26,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void create(long chatId, String name) {
-        userRepository.saveAndFlush(new User(chatId, name));
+    public User create(long chatId, String name) {
+        return userRepository.saveAndFlush(new User(chatId, name));
     }
 
     @Override

@@ -10,7 +10,7 @@ public interface UserService {
 
     boolean existsByTgId(Long tgId);
 
-    void create(long chatId, String name);
+    User create(long chatId, String name);
 
     void changeUsername(String username, Long tgId) throws EntityNotFoundBotException;
 }

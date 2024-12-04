@@ -27,9 +27,6 @@ public class StatisticConversation extends AConversation {
     private static Map<EConversationStep, List<EConversationStep>> completeStepGraph() {
         return new HashMap<>() {{
             put(EConversationStep.STATISTIC_PERIOD_CHOICE, new ArrayList<>() {{
-                add(EConversationStep.STATISTIC_LAST_DATE_INPUT);
-            }});
-            put(EConversationStep.STATISTIC_LAST_DATE_INPUT, new ArrayList<>() {{
                 add(null);
             }});
         }};

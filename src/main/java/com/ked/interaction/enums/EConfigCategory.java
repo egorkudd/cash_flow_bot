@@ -7,7 +7,8 @@ import java.util.Arrays;
 @Getter
 public enum EConfigCategory {
     ADD("Добавить"),
-    RENAME("Переименовать");
+    RENAME("Переименовать"),
+    EXIT("Выйти");
 
     private final String value;
 

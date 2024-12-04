@@ -7,7 +7,8 @@ import java.util.Arrays;
 @Getter
 public enum ETransaction {
     INCOME("Доход"),
-    EXPENSE("Расход");
+    EXPENSE("Расход"),
+    EXIT("Выйти");
 
     private final String value;
 

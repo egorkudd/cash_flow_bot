@@ -5,6 +5,7 @@ import com.ked.core.dto.TransactionDto;
 import com.ked.core.entities.Statistic;
 import com.ked.core.entities.Transaction;
 import com.ked.core.enums.ETimeInterval;
+import com.ked.core.enums.ETransaction;
 import com.ked.core.mappers.TransactionMapper;
 import com.ked.core.repositories.StatisticRepository;
 import com.ked.core.repositories.TransactionRepository;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
@@ -41,7 +43,7 @@ public class StatisticServiceImpl implements StatisticService {
     @Override
     public StatisticInfo getTransactionStatisticByTimeInterval(Long userId, ETimeInterval interval, Instant dateTime) {
         List<TransactionDto> transactions = switch (interval) {
-            case DAY -> getTransactionsByUserAndDay(userId, dateTime).stream()
+            case TODAY -> getTransactionsByUserAndDay(userId, dateTime).stream()
                     .map(transactionMapper::toDto)
                     .toList();
             case WEEK -> getTransactionsByUserAndWeek(userId, dateTime).stream()
@@ -53,7 +55,7 @@ public class StatisticServiceImpl implements StatisticService {
             case YEAR -> getTransactionsByUserAndYear(userId, dateTime).stream()
                     .map(transactionMapper::toDto)
                     .toList();
-            default -> new ArrayList<>();
+            case EXIT -> null;
         };
 
         log.info("Transactions: {}", transactions);
@@ -72,7 +74,8 @@ public class StatisticServiceImpl implements StatisticService {
     public StatisticInfo getTransactionStatisticByCustomTimeInterval(Long userId, Instant startDate, Instant endDate) {
         List<TransactionDto> transactions = getTransactionsByUserAndDay(userId, startDate, endDate).stream()
                 .map(transactionMapper::toDto)
-                .toList();;
+                .toList();
+        ;
 
         Map<String, Double> categoryDistribution = calculateCategoryDistribution(transactions);
 
@@ -83,11 +86,58 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
+    public String collectStatisticMessage(StatisticInfo info, ETimeInterval eTimeInterval) {
+        StringJoiner incomeJoiner = new StringJoiner("\n    ");
+        StringJoiner expenseJoiner = new StringJoiner("\n    ");
+
+        info.getTransactions().stream()
+                .collect(Collectors.groupingBy(TransactionDto::getCategoryName))
+                .forEach((k, v) -> {
+                    BigDecimal cost = v.stream()
+                            .map(TransactionDto::getAmount)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    if (ETransaction.INCOME.equals(v.get(0).getETransaction())) {
+                        incomeJoiner.add("%s - %s RUB".formatted(k, cost));
+                    } else {
+                        expenseJoiner.add("%s - %s RUB".formatted(k, cost));
+                    }
+                });
+
+
+        return """
+                Ваша статистика за %s:
+                <b>Доходы:</b>
+                    %s
+                <b>Расходы:</b>
+                    %s
+                """.formatted(eTimeInterval.getValue(), incomeJoiner, expenseJoiner);
+    }
+
+    @Override
     public void setPeriod(String period, Long userId) {
         checkUser(userId);
 
         Statistic statistic = getCollectingStatisticByUserId(userId);
         statistic.setETimeInterval(ETimeInterval.valueOf(period));
+        statisticRepository.saveAndFlush(statistic);
+    }
+
+    @Override
+    public void setYear(String yearStr, Long userId) {
+        checkUser(userId);
+
+        Statistic statistic = getCollectingStatisticByUserId(userId);
+        statistic.setYear(Integer.parseInt(yearStr));
+        statisticRepository.saveAndFlush(statistic);
+    }
+
+    @Override
+    public void setMonth(String monthStr, Long userId) {
+        checkUser(userId);
+
+        Statistic statistic = getCollectingStatisticByUserId(userId);
+        statistic.setMonth(Integer.parseInt(monthStr));
         statisticRepository.saveAndFlush(statistic);
     }
 

@@ -53,9 +53,13 @@ public class TransactionTypeChoiceStep extends ChoiceStep {
 
     @Override
     protected int finishStep(TgChat tgChat, AbsSender sender, String data) throws AbstractBotException {
-        User user = userService.findByTgId(tgChat.getChatId());
-        transactionService.setType(data, user.getId());
-        return 0;
+        if (!ETransaction.EXIT.toString().equals(data)) {
+            User user = userService.findByTgId(tgChat.getChatId());
+            transactionService.setType(data, user.getId());
+            return 0;
+        }
+
+        return 1;
     }
 
     private KeyboardDto getKeyboardDto(TgChat tgChat) {

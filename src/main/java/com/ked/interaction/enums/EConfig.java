@@ -7,7 +7,8 @@ import java.util.Arrays;
 @Getter
 public enum EConfig {
     NAME("Имя"),
-    CATEGORY("Категории");
+    CATEGORY("Категории"),
+    EXIT("Выйти");
 
     private final String value;
 

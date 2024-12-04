@@ -50,7 +50,11 @@ public class ConfigureCategoryActionChoiceStep extends ChoiceStep {
             return 0;
         }
 
-        return 1;
+        if (!EConfigCategory.EXIT.toString().equals(data)) {
+            return 1;
+        }
+
+        return 2;
     }
 
     private KeyboardDto getKeyboardDto(TgChat tgChat) {

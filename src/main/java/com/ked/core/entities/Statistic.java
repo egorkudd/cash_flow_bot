@@ -33,6 +33,10 @@ public class Statistic {
     @Enumerated(EnumType.STRING)
     private ETimeInterval eTimeInterval;
 
+    private Integer year;
+
+    private Integer month;
+
     @Column(name = "created_at")
     private Date createdAt;
 }

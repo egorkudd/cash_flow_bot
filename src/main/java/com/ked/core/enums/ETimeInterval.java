@@ -6,11 +6,11 @@ import java.util.Arrays;
 
 @Getter
 public enum ETimeInterval {
-    DAY("День"),
-    WEEK("Неделя"),
-    MONTH("Месяц"),
-    YEAR("Год"),
-    CUSTOM("Ввести свои даты");
+    TODAY("Сегодня"),
+    WEEK("7 дней"),
+    MONTH("Этот месяц"),
+    YEAR("Этот год"),
+    EXIT("Выйти");
 
     private final String value;
 

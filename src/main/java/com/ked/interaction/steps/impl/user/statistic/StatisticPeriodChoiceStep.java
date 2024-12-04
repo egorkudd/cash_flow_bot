@@ -1,5 +1,7 @@
 package com.ked.interaction.steps.impl.user.statistic;
 
+import com.ked.core.dto.StatisticInfo;
+import com.ked.core.entities.Statistic;
 import com.ked.core.entities.User;
 import com.ked.core.enums.ETimeInterval;
 import com.ked.core.services.StatisticService;
@@ -13,6 +15,7 @@ import com.ked.tg.entities.TgChat;
 import com.ked.tg.exceptions.AbstractBotException;
 import com.ked.tg.exceptions.EntityNotFoundBotException;
 import com.ked.tg.mappers.KeyboardMapper;
+import com.ked.tg.utils.MessageUtil;
 import com.ked.tg.utils.StepUtil;
 import com.ked.tg.utils.ValidUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @Component
@@ -53,14 +57,20 @@ public class StatisticPeriodChoiceStep extends ChoiceStep {
 
     @Override
     protected int finishStep(TgChat tgChat, AbsSender sender, String data) throws AbstractBotException {
-        User user = userService.findByTgId(tgChat.getChatId());
-        statisticService.setPeriod(data, user.getId());
+        if (!ETimeInterval.EXIT.toString().equals(data)) {
+            User user = userService.findByTgId(tgChat.getChatId());
+            statisticService.setPeriod(data, user.getId());
 
-        if (!ETimeInterval.CUSTOM.toString().equals(data)) {
-            return 0;
+            Statistic statistic = statisticService.setCreatedAt(user.getId());
+            StatisticInfo info = statisticService.getTransactionStatisticByTimeInterval(
+                    user.getId(), statistic.getETimeInterval(), Calendar.getInstance().toInstant()
+            );
+
+            String messageText = statisticService.collectStatisticMessage(info, ETimeInterval.valueOf(data));
+            MessageUtil.sendMessage(tgChat.getChatId(), messageText, sender);
         }
 
-        return 1;
+        return 0;
     }
 
     private KeyboardDto getKeyboardDto(TgChat tgChat) {
