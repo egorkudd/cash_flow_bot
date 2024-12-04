@@ -8,7 +8,7 @@ import com.ked.tg.utils.KeyboardUtil;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 public abstract class ChoiceStep extends ConversationStep {
-    protected static final String EXCEPTION_MESSAGE_TEXT = "Выберите один из выше предложенных вариантов";
+    protected static final String EXCEPTION_MESSAGE_TEXT = "Выберите один из выше предложенных вариантов (кнопок под сообщением выше)";
 
     protected abstract ResultDto isValidData(MessageDto messageDto) throws EntityNotFoundBotException;
 

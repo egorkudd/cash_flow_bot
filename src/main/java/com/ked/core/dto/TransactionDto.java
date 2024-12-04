@@ -9,6 +9,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -22,7 +24,7 @@ public class TransactionDto {
     private ETransaction eTransaction;
     private BigDecimal amount;
     private ECurrency eCurrency;
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @Override
     public String toString() {

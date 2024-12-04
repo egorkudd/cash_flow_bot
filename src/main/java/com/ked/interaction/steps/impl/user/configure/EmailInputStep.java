@@ -17,9 +17,9 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 public class EmailInputStep extends InputStep {
     private static final String PREPARE_MESSAGE_TEXT = "Введите email";
 
-    private static final String VALID_EXCEPTION_MESSAGE_TEXT = "Email должен быть в виде user@example.com";
+    private static final String VALID_EXCEPTION_MESSAGE_TEXT = "Email должен быть в виде user@example.com. Введите другой";
 
-    private static final String EXISTS_EXCEPTION_MESSAGE_TEXT = "Такой email уже зарегистрирован";
+    private static final String EXISTS_EXCEPTION_MESSAGE_TEXT = "Такой email уже зарегистрирован. Введите другой";
 
     private static final EmailValidator emailValidator = EmailValidator.getInstance();
 

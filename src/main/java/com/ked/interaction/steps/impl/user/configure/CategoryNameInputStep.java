@@ -8,6 +8,7 @@ import com.ked.tg.dto.MessageDto;
 import com.ked.tg.dto.ResultDto;
 import com.ked.tg.entities.TgChat;
 import com.ked.tg.exceptions.AbstractBotException;
+import com.ked.tg.utils.MessageUtil;
 import com.ked.tg.utils.StepUtil;
 import com.ked.tg.utils.ValidUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 public class CategoryNameInputStep extends InputStep {
     private static final String PREPARE_MESSAGE_TEXT = "Введите название категории";
 
-    private static final String EXCEPTION_MESSAGE_TEXT = "Слишком длинное название, уместите его в 15 символов";
+    private static final String EXCEPTION_MESSAGE_TEXT = "Слишком длинное название, уместите его в 15 символов. Введите другое";
 
     private final CategoryService categoryService;
 
@@ -35,6 +36,7 @@ public class CategoryNameInputStep extends InputStep {
         User user = userService.findByTgId(tgChat.getChatId());
         categoryService.setName(data, user.getId());
         categoryService.setCreatedAt(user.getId());
+        MessageUtil.sendMessage(tgChat.getChatId(), "Успешно!", sender);
         return 0;
     }
 

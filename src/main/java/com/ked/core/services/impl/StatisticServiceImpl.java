@@ -14,6 +14,8 @@ import com.ked.core.services.StatisticService;
 import com.ked.tg.exceptions.EntityNotFoundBotException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.map.HashedMap;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -23,13 +25,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StatisticServiceImpl implements StatisticService {
@@ -61,11 +63,7 @@ public class StatisticServiceImpl implements StatisticService {
             case EXIT -> null;
         };
 
-        log.info("Transactions: {}", transactions);
-
         Map<String, Double> categoryDistribution = calculateCategoryDistribution(transactions);
-
-        log.info("Category Distribution: {}", categoryDistribution);
 
         return StatisticInfo.builder()
                 .diagramPng(chartGenerator.generatePieChart(categoryDistribution))
@@ -93,17 +91,20 @@ public class StatisticServiceImpl implements StatisticService {
         StringJoiner incomeJoiner = new StringJoiner("\n    ");
         StringJoiner expenseJoiner = new StringJoiner("\n    ");
 
+        Map<Long, String> categoryMap = new HashMap<>();
+        info.getTransactions().forEach(t -> categoryMap.putIfAbsent(t.getCategoryId(), t.getCategoryName()));
+
         info.getTransactions().stream()
-                .collect(Collectors.groupingBy(TransactionDto::getCategoryName))
+                .collect(Collectors.groupingBy(TransactionDto::getCategoryId))
                 .forEach((k, v) -> {
                     BigDecimal cost = v.stream()
                             .map(TransactionDto::getAmount)
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                     if (ETransaction.INCOME.equals(v.get(0).getETransaction())) {
-                        incomeJoiner.add("%s - %s RUB".formatted(k, cost));
+                        incomeJoiner.add("%s - %s RUB".formatted(categoryMap.get(k), cost));
                     } else {
-                        expenseJoiner.add("%s - %s RUB".formatted(k, cost));
+                        expenseJoiner.add("%s - %s RUB".formatted(categoryMap.get(k), cost));
                     }
                 });
 
@@ -196,14 +197,14 @@ public class StatisticServiceImpl implements StatisticService {
         LocalDate endlocalDate = endDate.atZone(ZoneId.of("Europe/Moscow")).toLocalDate();
 
         LocalDateTime dayOfMonthTime = startlocalDate.atStartOfDay();
-        ZonedDateTime dayZonedDateTime = dayOfMonthTime.atZone(ZoneId.of("UTC"));
-        Instant firstInstant = dayZonedDateTime.toInstant();
+        ZonedDateTime dayZonedDateTime = dayOfMonthTime.atZone(ZoneId.of("Europe/Moscow"));
+        LocalDateTime first = dayZonedDateTime.toLocalDateTime();
 
         LocalDateTime dayEndOfMonthTime = endlocalDate.atTime(23, 59, 59, 999_999_999);
-        ZonedDateTime dayEndZonedDateTime = dayEndOfMonthTime.atZone(ZoneId.of("UTC"));
-        Instant secondInstant = dayEndZonedDateTime.toInstant();
+        ZonedDateTime dayEndZonedDateTime = dayEndOfMonthTime.atZone(ZoneId.of("Europe/Moscow"));
+        LocalDateTime second = dayEndZonedDateTime.toLocalDateTime();
 
-        return transactionRepository.findByUserIdAndCreatedAtBetween(userId, firstInstant, secondInstant);
+        return transactionRepository.findByUserIdAndCreatedAtBetween(userId, first, second);
     }
 
     private List<Transaction> getTransactionsByUserAndDay(Long userId, Instant date) {
@@ -214,15 +215,15 @@ public class StatisticServiceImpl implements StatisticService {
 
         LocalDate dayLocalDate = LocalDate.of(year, month, day);
         LocalDateTime dayOfMonthTime = dayLocalDate.atStartOfDay();
-        ZonedDateTime dayZonedDateTime = dayOfMonthTime.atZone(ZoneId.of("UTC"));
-        Instant firstInstant = dayZonedDateTime.toInstant();
+        ZonedDateTime dayZonedDateTime = dayOfMonthTime.atZone(ZoneId.of("Europe/Moscow"));
+        LocalDateTime first = dayZonedDateTime.toLocalDateTime();
 
         LocalDate dayEndLocalDate = LocalDate.of(year, month, day);
         LocalDateTime dayEndOfMonthTime = dayEndLocalDate.atTime(23, 59, 59, 999_999_999);
-        ZonedDateTime dayEndZonedDateTime = dayEndOfMonthTime.atZone(ZoneId.of("UTC"));
-        Instant secondInstant = dayEndZonedDateTime.toInstant();
+        ZonedDateTime dayEndZonedDateTime = dayEndOfMonthTime.atZone(ZoneId.of("Europe/Moscow"));
+        LocalDateTime second = dayEndZonedDateTime.toLocalDateTime();
 
-        return transactionRepository.findByUserIdAndCreatedAtBetween(userId, firstInstant, secondInstant);
+        return transactionRepository.findByUserIdAndCreatedAtBetween(userId, first, second);
     }
 
     private List<Transaction> getTransactionsByUserAndWeek(Long userId, Instant date) {
@@ -233,16 +234,16 @@ public class StatisticServiceImpl implements StatisticService {
 
         LocalDate dayLocalDate = LocalDate.of(year, month, day);
         LocalDateTime dayOfMonthTime = dayLocalDate.atStartOfDay().minusDays(6);
-        ZonedDateTime dayZonedDateTime = dayOfMonthTime.atZone(ZoneId.of("UTC"));
-        Instant firstInstant = dayZonedDateTime.toInstant();
+        ZonedDateTime dayZonedDateTime = dayOfMonthTime.atZone(ZoneId.of("Europe/Moscow"));
+        LocalDateTime first = dayZonedDateTime.toLocalDateTime();
 
         LocalDate dayEndLocalDate = LocalDate.of(year, month, day);
         LocalDateTime dayEndOfMonthTime = dayEndLocalDate.atTime(23, 59, 59, 999_999_999);
-        ;
-        ZonedDateTime dayEndZonedDateTime = dayEndOfMonthTime.atZone(ZoneId.of("UTC"));
-        Instant secondInstant = dayEndZonedDateTime.toInstant();
 
-        return transactionRepository.findByUserIdAndCreatedAtBetween(userId, firstInstant, secondInstant);
+        ZonedDateTime dayEndZonedDateTime = dayEndOfMonthTime.atZone(ZoneId.of("Europe/Moscow"));
+        LocalDateTime second = dayEndZonedDateTime.toLocalDateTime();
+
+        return transactionRepository.findByUserIdAndCreatedAtBetween(userId, first, second);
     }
 
     private List<Transaction> getTransactionsByUserAndDate(Long userId, Instant date) {
@@ -252,15 +253,15 @@ public class StatisticServiceImpl implements StatisticService {
 
         LocalDate firstDayOfMonth = LocalDate.of(year, month, 1);
         LocalDateTime firstDayOfMonthTime = firstDayOfMonth.atStartOfDay();
-        ZonedDateTime firstZonedDateTime = firstDayOfMonthTime.atZone(ZoneId.of("UTC"));
-        Instant firstInstant = firstZonedDateTime.toInstant();
+        ZonedDateTime firstZonedDateTime = firstDayOfMonthTime.atZone(ZoneId.of("Europe/Moscow"));
+        LocalDateTime first = firstZonedDateTime.toLocalDateTime();
 
         LocalDate lastDayOfMonth = LocalDate.of(year, month, firstDayOfMonth.lengthOfMonth());
         LocalDateTime lastDayOfMonthTime = lastDayOfMonth.atTime(23, 59, 59, 999_999_999);
-        ZonedDateTime lastZonedDateTime = lastDayOfMonthTime.atZone(ZoneId.of("UTC"));
-        Instant lastInstant = lastZonedDateTime.toInstant();
+        ZonedDateTime lastZonedDateTime = lastDayOfMonthTime.atZone(ZoneId.of("Europe/Moscow"));
+        LocalDateTime last = lastZonedDateTime.toLocalDateTime();
 
-        return transactionRepository.findByUserIdAndMonth(userId, firstInstant, lastInstant);
+        return transactionRepository.findByUserIdAndMonth(userId, first, last);
     }
 
     private List<Transaction> getTransactionsByUserAndYear(Long userId, Instant date) {
@@ -269,14 +270,14 @@ public class StatisticServiceImpl implements StatisticService {
         int year = localDate.getYear();
         LocalDate firstDayOfYear = LocalDate.of(year, 1, 1);
         LocalDateTime firstDayOfYearTime = firstDayOfYear.atStartOfDay();
-        ZonedDateTime firstZonedDateTime = firstDayOfYearTime.atZone(ZoneId.of("UTC"));
-        Instant firstInstant = firstZonedDateTime.toInstant();
+        ZonedDateTime firstZonedDateTime = firstDayOfYearTime.atZone(ZoneId.of("Europe/Moscow"));
+        LocalDateTime first = firstZonedDateTime.toLocalDateTime();
 
         LocalDate lastDayOfYear = LocalDate.of(year, 12, 31);
-        LocalDateTime lastDayOfYearTime = lastDayOfYear.atTime(23, 59, 59, 999_999_999); // Устанавливаем время на конец дня
-        ZonedDateTime lastZonedDateTime = lastDayOfYearTime.atZone(ZoneId.of("UTC"));
-        Instant lastInstant = lastZonedDateTime.toInstant();
+        LocalDateTime lastDayOfYearTime = lastDayOfYear.atTime(23, 59, 59, 999_999_999);
+        ZonedDateTime lastZonedDateTime = lastDayOfYearTime.atZone(ZoneId.of("Europe/Moscow"));
+        LocalDateTime last = lastZonedDateTime.toLocalDateTime();
 
-        return transactionRepository.findByUserIdAndYear(userId, firstInstant, lastInstant);
+        return transactionRepository.findByUserIdAndYear(userId, first, last);
     }
 }

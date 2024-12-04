@@ -18,7 +18,7 @@ public class ConfigureConversation extends AConversation {
 
     private static final EConversationStep START_STEP = EConversationStep.CONFIGURE_CHOICE;
 
-    private static final String FINISH_MESSAGE = "Изменения успешно сохранены!";
+    private static final String FINISH_MESSAGE = null;
 
     public ConfigureConversation() {
         super(completeStepGraph(), START_STEP, FINISH_MESSAGE);

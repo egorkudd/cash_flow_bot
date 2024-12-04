@@ -6,6 +6,7 @@ import com.ked.tg.dto.MessageDto;
 import com.ked.tg.dto.ResultDto;
 import com.ked.tg.entities.TgChat;
 import com.ked.tg.exceptions.AbstractBotException;
+import com.ked.tg.utils.MessageUtil;
 import com.ked.tg.utils.StepUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,10 +17,9 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 public class PasswordInputStep extends InputStep {
     private static final String PREPARE_MESSAGE_TEXT = "Введите пароль (после успешного сохранения вы можете удалить сообщение с паролем)";
 
-    private static final String EXCEPTION_MESSAGE_TEXT = "Пароль должен быть от 6 до 255 символов";
+    private static final String EXCEPTION_MESSAGE_TEXT = "Пароль должен быть от 6 до 255 символов. Введите другой";
 
     private final UserService userService;
-
 
     @Override
     public void prepare(TgChat tgChat, AbsSender sender) throws AbstractBotException {
@@ -29,6 +29,7 @@ public class PasswordInputStep extends InputStep {
     @Override
     protected int finishStep(TgChat tgChat, AbsSender sender, String data) throws AbstractBotException {
         userService.setPassword(data, tgChat.getChatId());
+        MessageUtil.sendMessage(tgChat.getChatId(), "Вы успешно зарегистрировались!", sender);
         return 0;
     }
 

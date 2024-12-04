@@ -6,6 +6,7 @@ import com.ked.tg.dto.MessageDto;
 import com.ked.tg.dto.ResultDto;
 import com.ked.tg.entities.TgChat;
 import com.ked.tg.exceptions.AbstractBotException;
+import com.ked.tg.utils.MessageUtil;
 import com.ked.tg.utils.NameUtil;
 import com.ked.tg.utils.StepUtil;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 public class ChangeUserNameInputStep extends InputStep {
     private static final String PREPARE_MESSAGE_TEXT = "Введите новое имя";
 
-    private static final String EXCEPTION_MESSAGE_TEXT = "Слишком длинное название, уместите его в 15 символов";
+    private static final String EXCEPTION_MESSAGE_TEXT = "Слишком длинное название, уместите его в 15 символов. Введите другое";
 
     private final UserService userService;
 
@@ -30,6 +31,7 @@ public class ChangeUserNameInputStep extends InputStep {
     @Override
     protected int finishStep(TgChat tgChat, AbsSender sender, String data) throws AbstractBotException {
         userService.changeUsername(data, tgChat.getChatId());
+        MessageUtil.sendMessage(tgChat.getChatId(), "Имя успешно изменено!", sender);
         return 0;
     }
 

@@ -18,7 +18,7 @@ public class AddTransactionConversation extends AConversation {
 
     private static final EConversationStep START_STEP = EConversationStep.TRANSACTION_TYPE_CHOICE;
 
-    private static final String FINISH_MESSAGE = "Транзакция успешно добавлена!";
+    private static final String FINISH_MESSAGE = null;
 
     public AddTransactionConversation() {
         super(completeStepGraph(), START_STEP, FINISH_MESSAGE);
@@ -28,6 +28,7 @@ public class AddTransactionConversation extends AConversation {
         return new HashMap<>() {{
             put(EConversationStep.TRANSACTION_TYPE_CHOICE, new ArrayList<>() {{
                 add(EConversationStep.TRANSACTION_CATEGORY_CHOICE);
+                add(null);
             }});
             put(EConversationStep.TRANSACTION_CATEGORY_CHOICE, new ArrayList<>() {{
                 add(EConversationStep.TRANSACTION_INPUT);

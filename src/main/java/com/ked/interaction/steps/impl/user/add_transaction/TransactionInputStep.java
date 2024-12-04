@@ -8,6 +8,7 @@ import com.ked.tg.dto.MessageDto;
 import com.ked.tg.dto.ResultDto;
 import com.ked.tg.entities.TgChat;
 import com.ked.tg.exceptions.AbstractBotException;
+import com.ked.tg.utils.MessageUtil;
 import com.ked.tg.utils.StepUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,9 +19,15 @@ import java.math.BigDecimal;
 @Component
 @RequiredArgsConstructor
 public class TransactionInputStep extends InputStep {
+    private static final BigDecimal MAX_MONEY_VALUE = new BigDecimal(9_000_000_000_000_000_000L);
+
     private static final String PREPARE_MESSAGE_TEXT = "Введите сумму транзакции";
 
-    private static final String EXCEPTION_MESSAGE_TEXT = "Неверный формат ввода. Пример: 50, 50.1, 50.10";
+    private static final String EXCEPTION_MESSAGE_TEXT = """
+            Неверный формат ввода. Введите другую сумму
+            Пример: 50, 50.1, 50.10
+            P.S. Сумма должна быть меньше %s
+            """.formatted(MAX_MONEY_VALUE);
 
     private final TransactionService transactionService;
 
@@ -36,6 +43,7 @@ public class TransactionInputStep extends InputStep {
         User user = userService.findByTgId(tgChat.getChatId());
         transactionService.setAmount(data, user.getId());
         transactionService.setCreatedAt(user.getId());
+        MessageUtil.sendMessage(tgChat.getChatId(), "Транзакция успешно добавлена!", sender);
         return 0;
     }
 
@@ -43,9 +51,12 @@ public class TransactionInputStep extends InputStep {
     protected ResultDto isValidData(MessageDto messageDto) {
         try {
             BigDecimal money = new BigDecimal(messageDto.getData());
-            return new ResultDto(true);
-        } catch (NumberFormatException e) {
-            return new ResultDto(false, EXCEPTION_MESSAGE_TEXT);
+            if (MAX_MONEY_VALUE.compareTo(money) > 0) {
+                return new ResultDto(true);
+            }
+        } catch (NumberFormatException ignored) {
         }
+
+        return new ResultDto(false, EXCEPTION_MESSAGE_TEXT);
     }
 }

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -79,7 +81,7 @@ public class TransactionServiceImpl implements TransactionService {
         checkUser(userId);
 
         Transaction transaction = getCollectingTransactionByUserId(userId);
-        transaction.setCreatedAt(Instant.now());
+        transaction.setCreatedAt(LocalDateTime.now());
         transactionRepository.saveAndFlush(transaction);
     }
 
