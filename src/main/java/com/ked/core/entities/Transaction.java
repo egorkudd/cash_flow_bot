@@ -1,6 +1,5 @@
 package com.ked.core.entities;
 
-import com.ked.core.enums.ECurrency;
 import com.ked.core.enums.ETransaction;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,8 +14,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -41,8 +38,6 @@ public class Transaction {
 
     private BigDecimal amount;
 
-    private ECurrency eCurrency;
-
-    @Column(name = "created_at")
+    @Column(name = "date")
     private LocalDateTime createdAt;
 }
