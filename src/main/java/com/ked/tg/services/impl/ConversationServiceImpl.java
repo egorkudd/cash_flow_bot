@@ -2,12 +2,10 @@ package com.ked.tg.services.impl;
 
 import com.ked.interaction.enums.EConversation;
 import com.ked.interaction.enums.EConversationStep;
-import com.ked.tg.dto.MessageDto;
 import com.ked.tg.entities.TgChat;
 import com.ked.tg.enums.EMessage;
 import com.ked.tg.exceptions.AbstractBotException;
 import com.ked.tg.exceptions.CommandBotException;
-import com.ked.tg.mappers.MessageMapper;
 import com.ked.tg.services.ConversationService;
 import com.ked.tg.services.ConversationStepService;
 import com.ked.tg.services.TgChatService;
@@ -26,14 +24,11 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 public class ConversationServiceImpl implements ConversationService {
     private final ConversationStepService conversationStepService;
     private final TgChatService tgChatService;
-    private final MessageMapper messageMapper;
 
     @Override
-    public void startConversation(
-            long chatId, EConversation eConversation, AbsSender sender
-    ) throws AbstractBotException {
-        TgChat tgChat = createChatHash(chatId, eConversation);
-        conversationStepService.prepareStep(tgChat, sender);
+    public void startConversation(Update update, EConversation eConversation, AbsSender sender) throws AbstractBotException {
+        TgChat tgChat = createChatHash(UpdateUtil.getChatId(update), eConversation);
+        conversationStepService.prepareStep(new Update(), tgChat, sender);
         tgChatService.save(tgChat);
     }
 
@@ -46,18 +41,15 @@ public class ConversationServiceImpl implements ConversationService {
         log.info(LogUtil.getConversationLog(update, eMessage, tgChat));
 
         if (tgChat != null) {
-            MessageDto messageDto = messageMapper.messageDto(update, eMessage, tgChat);
-            executeConversationStep(tgChat, messageDto, sender);
+            executeConversationStep(tgChat, update, sender);
         }
     }
 
-    private void executeConversationStep(
-            TgChat tgChat, MessageDto messageDto, AbsSender sender
-    ) throws AbstractBotException {
-        handleCommand(messageDto);
+    private void executeConversationStep(TgChat tgChat, Update update, AbsSender sender) throws AbstractBotException {
+        handleCommand(update);
 
         EConversationStep prevStep = tgChat.getEConversationStep();
-        EConversationStep nextStep = conversationStepService.executeStep(tgChat, messageDto, sender);
+        EConversationStep nextStep = conversationStepService.executeStep(tgChat, update, sender);
 
         if (nextStep == null) {
             handleConversationEnd(tgChat, sender);
@@ -66,7 +58,7 @@ public class ConversationServiceImpl implements ConversationService {
 
         if (isStepCompleted(nextStep, prevStep)) {
             tgChat.setEConversationStep(nextStep);
-            conversationStepService.prepareStep(tgChat, sender);
+            conversationStepService.prepareStep(update, tgChat, sender);
         }
 
         tgChatService.save(tgChat);
@@ -92,8 +84,8 @@ public class ConversationServiceImpl implements ConversationService {
         tgChatService.delete(tgChat);
     }
 
-    private void handleCommand(MessageDto messageDto) throws CommandBotException {
-        if (EMessage.COMMAND.equals(messageDto.getEMessage())) {
+    private void handleCommand(Update update) throws CommandBotException {
+        if (UpdateUtil.isCommand(update)) {
             throw new CommandBotException(
                     "Попытка вызвать команду во время действующего диалога",
                     "Вы не можете ввести другую команду, пока не завершите данный диалог"

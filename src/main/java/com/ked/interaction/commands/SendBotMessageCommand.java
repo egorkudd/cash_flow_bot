@@ -8,6 +8,7 @@ import com.ked.tg.services.BotMessageService;
 import com.ked.tg.services.BotUserService;
 import com.ked.tg.services.ConversationService;
 import com.ked.tg.utils.MessageUtil;
+import com.ked.tg.utils.UpdateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
@@ -39,7 +40,7 @@ public class SendBotMessageCommand extends BotCommand {
             BotUser botUser = botUserService.getByChatIdAndRole(chat.getId(), ERole.ROLE_WRITER);
             botMessageService.create(botUser.getId());
             conversationService.startConversation(
-                    chat.getId(), EConversation.SEND_BOT_MESSAGE, absSender
+                    UpdateUtil.collectUpdate(chat), EConversation.SEND_BOT_MESSAGE, absSender
             );
         } catch (EntityNotFoundBotException e) {
             log.error(e.getMessage());

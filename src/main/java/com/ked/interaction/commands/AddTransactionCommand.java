@@ -4,6 +4,7 @@ import com.ked.interaction.enums.EConversation;
 import com.ked.tg.exceptions.AbstractBotException;
 import com.ked.tg.services.ConversationService;
 import com.ked.tg.utils.MessageUtil;
+import com.ked.tg.utils.UpdateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
@@ -24,14 +25,16 @@ public class AddTransactionCommand extends BotCommand {
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] arguments) {
         try {
-            startConversation(chat.getId(), absSender);
+            startConversation(chat, absSender);
         } catch (AbstractBotException e) {
             MessageUtil.sendMessage(chat.getId(), e.getUserMessage(), absSender);
             log.error(e.getMessage());
         }
     }
 
-    private void startConversation(Long chatId, AbsSender absSender) {
-        conversationService.startConversation(chatId, EConversation.ADD_TRANSACTION, absSender);
+    private void startConversation(Chat chat, AbsSender absSender) {
+        conversationService.startConversation(
+                UpdateUtil.collectUpdate(chat), EConversation.ADD_TRANSACTION, absSender
+        );
     }
 }

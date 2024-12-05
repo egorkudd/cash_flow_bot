@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 
 @Service
 public interface ConversationService {
-    void startConversation(long chatId, EConversation eConversation, AbsSender sender) throws AbstractBotException;
+    void startConversation(Update update, EConversation eConversation, AbsSender sender) throws AbstractBotException;
 
     void executeConversationStep(Update update, EMessage EMessage, AbsSender sender) throws AbstractBotException;
 }

@@ -1,10 +1,9 @@
 package com.ked.tg.utils;
 
-import com.ked.tg.dto.MessageDto;
 import com.ked.tg.dto.ResultDto;
 import com.ked.tg.enums.EMessage;
 import com.ked.tg.enums.EYesNo;
-import org.telegram.telegrambots.meta.api.objects.Document;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -48,24 +47,6 @@ public class ValidUtil {
         return registerPlace.length() > MAX_REGISTER_PLACE_LENGTH;
     }
 
-    public static ResultDto isValidFile(MessageDto messageDto, long maxDocSizeKb) {
-        Document document = messageDto.getDocument();
-
-        if (document == null) {
-            return new ResultDto(false, "Вам необходимо отправить документ в ответном сообщении");
-        }
-
-        if (document.getFileSize() > maxDocSizeKb * 1024) {
-            return new ResultDto(false, "Размер документа не должен превышать ".concat(String.valueOf(maxDocSizeKb)).concat("KB"));
-        }
-
-        if (!document.getFileName().endsWith(".doc") && !document.getFileName().endsWith(".pdf")) {
-            return new ResultDto(false, "Формат документа должен быть в формате .doc или .pdf");
-        }
-
-        return new ResultDto(true);
-    }
-
     public static ResultDto isValidShortString(String string) {
         if (string.isBlank()) {
             return new ResultDto(false, "Вы ввели пустую строку. Попробуйте снова");
@@ -79,13 +60,13 @@ public class ValidUtil {
         return new ResultDto(true);
     }
 
-    public static ResultDto isValidYesNoChoice(MessageDto messageDto, String exceptionMessage) {
-        if (!isCallback(messageDto.getEMessage())) {
+    public static ResultDto isValidYesNoChoice(Update update, String exceptionMessage) {
+        if (!UpdateUtil.isCallback(update)) {
             return new ResultDto(false, exceptionMessage);
         }
 
         try {
-            EYesNo.valueOf(messageDto.getData());
+            EYesNo.valueOf(UpdateUtil.getUserInputText(update));
             return new ResultDto(true);
         } catch (IllegalArgumentException ignored) {
         }

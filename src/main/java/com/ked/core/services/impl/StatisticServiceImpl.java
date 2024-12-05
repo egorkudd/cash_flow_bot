@@ -13,9 +13,6 @@ import com.ked.core.repositories.UserRepository;
 import com.ked.core.services.StatisticService;
 import com.ked.tg.exceptions.EntityNotFoundBotException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.map.HashedMap;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

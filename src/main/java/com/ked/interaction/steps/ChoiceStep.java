@@ -1,26 +1,26 @@
 package com.ked.interaction.steps;
 
-import com.ked.tg.dto.MessageDto;
 import com.ked.tg.dto.ResultDto;
 import com.ked.tg.entities.TgChat;
 import com.ked.tg.exceptions.EntityNotFoundBotException;
 import com.ked.tg.utils.KeyboardUtil;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 public abstract class ChoiceStep extends ConversationStep {
     protected static final String EXCEPTION_MESSAGE_TEXT = "Выберите один из выше предложенных вариантов (кнопок под сообщением выше)";
 
-    protected abstract ResultDto isValidData(MessageDto messageDto) throws EntityNotFoundBotException;
+    protected abstract ResultDto isValidData(Update update) throws EntityNotFoundBotException;
 
     @Override
-    public int execute(TgChat tgChat, MessageDto messageDto, AbsSender sender) throws EntityNotFoundBotException {
-        ResultDto result = isValidData(messageDto);
+    public int execute(TgChat tgChat, Update update, AbsSender sender) throws EntityNotFoundBotException {
+        ResultDto result = isValidData(update);
         if (!result.isDone()) {
-            return handleIllegalUserAction(messageDto, sender, result.getMessage());
+            return handleIllegalUserAction(update, sender, result.getMessage());
         }
 
         deleteKeyboard(tgChat, sender);
-        return finishStep(tgChat, sender, messageDto.getData());
+        return finishStep(tgChat, sender, update);
     }
 
     protected void deleteKeyboard(TgChat tgChat, AbsSender sender) {

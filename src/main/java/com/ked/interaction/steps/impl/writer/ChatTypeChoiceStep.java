@@ -1,7 +1,6 @@
 package com.ked.interaction.steps.impl.writer;
 
 import com.ked.interaction.steps.ChoiceStep;
-import com.ked.tg.dto.MessageDto;
 import com.ked.tg.dto.ResultDto;
 import com.ked.tg.entities.TgChat;
 import com.ked.tg.enums.EChat;
@@ -11,10 +10,11 @@ import com.ked.tg.services.BotMessageService;
 import com.ked.tg.services.BotUserService;
 import com.ked.tg.utils.ButtonUtil;
 import com.ked.tg.utils.StepUtil;
-import com.ked.tg.utils.ValidUtil;
+import com.ked.tg.utils.UpdateUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 @Component
@@ -29,13 +29,13 @@ public class ChatTypeChoiceStep extends ChoiceStep {
     private static final String PREPARE_MESSAGE_TEXT = "Вы хотите разослать это ссобщение только участникамм конкретного мероприятия?";
 
     @Override
-    protected ResultDto isValidData(MessageDto messageDto) throws EntityNotFoundException {
-        if (!ValidUtil.isCallback(messageDto.getEMessage())) {
+    protected ResultDto isValidData(Update update) throws EntityNotFoundException {
+        if (!UpdateUtil.isCallback(update)) {
             return new ResultDto(false, EXCEPTION_MESSAGE_TEXT);
         }
 
         try {
-            EChat.valueOf(messageDto.getData());
+            EChat.valueOf(UpdateUtil.getUserInputText(update));
             return new ResultDto(true);
         } catch (IllegalArgumentException ignored) {
         }
@@ -44,7 +44,7 @@ public class ChatTypeChoiceStep extends ChoiceStep {
     }
 
     @Override
-    public void prepare(TgChat chatHash, AbsSender sender) throws EntityNotFoundException {
+    public void prepare(TgChat chatHash, Update update, AbsSender sender) throws EntityNotFoundException {
         StepUtil.sendPrepareMessageWithInlineKeyBoard(
                 chatHash,
                 PREPARE_MESSAGE_TEXT,
@@ -54,8 +54,8 @@ public class ChatTypeChoiceStep extends ChoiceStep {
     }
 
     @Override
-    protected int finishStep(TgChat chatHash, AbsSender sender, String data) throws EntityNotFoundException {
-        EChat eChat = EChat.valueOf(data);
+    protected int finishStep(TgChat chatHash, AbsSender sender, Update update) throws EntityNotFoundException {
+        EChat eChat = EChat.valueOf(UpdateUtil.getUserInputText(update));
         long userId = botUserService.getByChatIdAndRole(chatHash.getChatId(), ERole.ROLE_WRITER).getId();
         botMessageService.saveChatType(userId, eChat);
         return 0;

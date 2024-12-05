@@ -31,6 +31,10 @@ public class UpdateUtil {
         return getChat(update).isUserChat();
     }
 
+    public static boolean isCommand(Update update) {
+        return update.hasMessage() && update.getMessage().isCommand();
+    }
+
     public static Chat getChat(Update update) {
         if (update.hasCallbackQuery()) {
             return update.getCallbackQuery().getMessage().getChat();
@@ -45,5 +49,17 @@ public class UpdateUtil {
         return (update.hasCallbackQuery())
                 ? update.getCallbackQuery().getMessage()
                 : update.getMessage();
+    }
+
+//    public static String getUserInputText(Update update) {
+//        return getMessage(update).getText();
+//    } // TODO : возможно надо пересмотреть (фото, видео, другие действия кроме сообщения)
+
+    public static Update collectUpdate(Chat chat) {
+        Update update = new Update();
+        Message message = new Message();
+        message.setChat(chat);
+        update.setMessage(message);
+        return update;
     }
 }

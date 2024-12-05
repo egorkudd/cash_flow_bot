@@ -4,13 +4,13 @@ import com.ked.interaction.conversations.AConversation;
 import com.ked.interaction.enums.EConversation;
 import com.ked.interaction.enums.EConversationStep;
 import com.ked.interaction.steps.ConversationStep;
-import com.ked.tg.dto.MessageDto;
 import com.ked.tg.entities.TgChat;
 import com.ked.tg.exceptions.AbstractBotException;
 import com.ked.tg.services.ConversationStepService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.util.Map;
@@ -28,17 +28,15 @@ public class ConversationStepServiceImpl implements ConversationStepService {
     }
 
     @Override
-    public void prepareStep(TgChat tgChat, AbsSender sender) throws AbstractBotException {
+    public void prepareStep(Update update, TgChat tgChat, AbsSender sender) throws AbstractBotException {
         ConversationStep step = getConversationStep(tgChat);
-        step.prepare(tgChat, sender);
+        step.prepare(tgChat, update, sender);
     }
 
     @Override
-    public EConversationStep executeStep(
-            TgChat tgChat, MessageDto messageDto, AbsSender sender
-    ) throws AbstractBotException {
+    public EConversationStep executeStep(TgChat tgChat, Update update, AbsSender sender) throws AbstractBotException {
         ConversationStep step = getConversationStep(tgChat);
-        int stepIndex = step.execute(tgChat, messageDto, sender);
+        int stepIndex = step.execute(tgChat, update, sender);
         if (stepIndex == -1) {
             return tgChat.getEConversationStep();
         }

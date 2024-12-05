@@ -5,23 +5,26 @@ import com.ked.core.entities.Statistic;
 import com.ked.core.entities.User;
 import com.ked.core.services.StatisticService;
 import com.ked.core.services.UserService;
-import com.ked.interaction.steps.InputStep;
+import com.ked.interaction.steps.ChoiceStep;
 import com.ked.tg.builders.MessageBuilder;
-import com.ked.tg.dto.MessageDto;
 import com.ked.tg.dto.ResultDto;
 import com.ked.tg.entities.TgChat;
 import com.ked.tg.exceptions.AbstractBotException;
 import com.ked.tg.exceptions.CommandBotException;
 import com.ked.tg.utils.DateUtil;
 import com.ked.tg.utils.MessageUtil;
-import com.ked.tg.utils.StepUtil;
+import com.ked.tg.utils.UpdateUtil;
 import com.spire.doc.Document;
 import com.spire.doc.FileFormat;
 import com.spire.doc.Section;
+import io.github.dostonhamrakulov.InlineCalendarBuilder;
+import io.github.dostonhamrakulov.LanguageEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.io.File;
@@ -33,7 +36,7 @@ import java.nio.file.Paths;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class StatisticLastDateInputStep extends InputStep {
+public class StatisticLastDateInputStep extends ChoiceStep {
     @Value("${report.file}")
     private String reportFile;
 
@@ -44,21 +47,26 @@ public class StatisticLastDateInputStep extends InputStep {
 
     private static final String EXCEPTION_MESSAGE_TEXT = "Неверный формат. Пример: 30.01.2023";
 
+    private static final InlineCalendarBuilder inlineCalendarBuilder = new InlineCalendarBuilder(LanguageEnum.RU);
+
     private final StatisticService statisticService;
 
     private final UserService userService;
 
     @Override
-    public void prepare(TgChat tgChat, AbsSender sender) throws AbstractBotException {
-        StepUtil.sendPrepareMessageOnlyText(tgChat, PREPARE_MESSAGE_TEXT, sender);
+    public void prepare(TgChat tgChat, Update update, AbsSender sender) throws AbstractBotException {
+        inlineCalendarBuilder.setShowFullMonthName(true);
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(tgChat.getChatId());
+        sendMessage.setReplyMarkup(inlineCalendarBuilder.build(update));
     }
 
     @Override
-    protected int finishStep(TgChat tgChat, AbsSender sender, String data) throws AbstractBotException {
+    protected int finishStep(TgChat tgChat, AbsSender sender, Update update) throws AbstractBotException {
         User user = userService.findByTgId(tgChat.getChatId());
         Statistic statistic = statisticService.setCreatedAt(user.getId());
         StatisticInfo info = statisticService.getTransactionStatisticByTimeInterval(
-                user.getId(), statistic.getETimeInterval(), DateUtil.convertInstant(data)
+                user.getId(), statistic.getETimeInterval(), DateUtil.convertInstant(UpdateUtil.getUserInputText(update))
         );
 
         sendDiagram(info.getDiagramPng(), tgChat, sender);
@@ -96,8 +104,8 @@ public class StatisticLastDateInputStep extends InputStep {
     }
 
     @Override
-    protected ResultDto isValidData(MessageDto messageDto) {
-        if (!DateUtil.isValidDate(messageDto.getData())) {
+    protected ResultDto isValidData(Update update) {
+        if (!DateUtil.isValidDate(UpdateUtil.getUserInputText(update))) {
             return new ResultDto(false, EXCEPTION_MESSAGE_TEXT);
         }
 

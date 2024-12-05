@@ -2,11 +2,11 @@ package com.ked.tg.utils;
 
 import com.ked.tg.builders.MessageBuilder;
 import com.ked.tg.dto.KeyboardDto;
-import com.ked.tg.dto.MessageDto;
 import com.ked.tg.entities.TgChat;
 import com.ked.tg.enums.EPageMove;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 public class StepUtil {
@@ -45,9 +45,9 @@ public class StepUtil {
         tgChat.setPrevBotMessageId(messageId);
     }
 
-    public static boolean isMovePageAction(TgChat tgChat, MessageDto messageDto, KeyboardDto keyboardDto, AbsSender sender) {
+    public static boolean isMovePageAction(TgChat tgChat, Update update, KeyboardDto keyboardDto, AbsSender sender) {
         try {
-            EPageMove ePageMove = EPageMove.valueOf(messageDto.getData());
+            EPageMove ePageMove = EPageMove.valueOf(UpdateUtil.getUserInputText(update));
             changePage(ePageMove, keyboardDto, tgChat, sender);
             return true;
         } catch (IllegalArgumentException ignored) {
