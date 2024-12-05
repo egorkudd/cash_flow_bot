@@ -55,6 +55,7 @@ public class ConfigureConversation extends AConversation {
             }});
             put(EConversationStep.CATEGORY_CHOICE, new ArrayList<>() {{
                 add(EConversationStep.CATEGORY_NEW_NAME_INPUT);
+                add(null);
             }});
             put(EConversationStep.CATEGORY_NEW_NAME_INPUT, new ArrayList<>() {{
                 add(null);

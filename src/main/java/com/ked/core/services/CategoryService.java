@@ -7,7 +7,9 @@ import java.util.List;
 
 @Service
 public interface CategoryService {
-    List<Category> findAllByUserIdToChoose(Long userId);
+    List<Category> findAllByUserIdToAddTransaction(Long userId);
+
+    List<Category> findAllByUserIdToRename(Long userId);
 
     boolean exists(Long categoryId);
 

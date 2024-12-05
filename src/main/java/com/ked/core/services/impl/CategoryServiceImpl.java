@@ -24,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final UserRepository userRepository;
 
     @Override
-    public List<Category> findAllByUserIdToChoose(Long userId) {
+    public List<Category> findAllByUserIdToAddTransaction(Long userId) {
         Optional<Transaction> transactionOpt = transactionRepository.findByUserIdAndCreatedAtIsNull(userId);
         if (transactionOpt.isPresent()) {
             ETransaction type = transactionOpt.get().getType();
@@ -33,7 +33,14 @@ public class CategoryServiceImpl implements CategoryService {
             }
         }
 
-        return categoryRepository.findAll();
+        return categoryRepository.findAllByUserId(userId);
+    }
+
+    @Override
+    public List<Category> findAllByUserIdToRename(Long userId) {
+        return categoryRepository.findAllByUserId(userId).stream()
+                .filter(category -> !category.getName().equals("Без категории"))
+                .toList();
     }
 
     @Override

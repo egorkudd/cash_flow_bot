@@ -33,12 +33,19 @@ public class CategoryChoiceStep extends ChoiceStep {
 
     private final KeyboardMapper keyboardMapper;
 
-
     @Override
     protected ResultDto isValidData(MessageDto messageDto) throws EntityNotFoundBotException {
-        if (!ValidUtil.isCallback(messageDto.getEMessage()) ||
-                !categoryService.exists(Long.valueOf(messageDto.getData()))
-        ) {
+        if ("Выйти".equals(messageDto.getData())) {
+            return new ResultDto(true);
+        }
+
+        try {
+            if (!ValidUtil.isCallback(messageDto.getEMessage()) ||
+                    !categoryService.exists(Long.valueOf(messageDto.getData()))
+            ) {
+                return new ResultDto(false, EXCEPTION_MESSAGE_TEXT);
+            }
+        } catch (NumberFormatException e) {
             return new ResultDto(false, EXCEPTION_MESSAGE_TEXT);
         }
 
@@ -54,18 +61,24 @@ public class CategoryChoiceStep extends ChoiceStep {
 
     @Override
     protected int finishStep(TgChat tgChat, AbsSender sender, String data) throws AbstractBotException {
+        if ("Выйти".equals(data)) {
+            return 1;
+        }
+
         categoryService.deleteCreatedAt(data);
         return 0;
     }
 
     private KeyboardDto getKeyboardDto(TgChat tgChat) {
         User user = userService.findByTgId(tgChat.getChatId());
-        List<Category> categoryList = categoryService.findAllByUserIdToChoose(user.getId());
+        List<Category> categoryList = categoryService.findAllByUserIdToRename(user.getId());
         List<ButtonDto> buttonDtoList = new ArrayList<>();
         for (Category category : categoryList) {
             buttonDtoList.add(new ButtonDto(category.getId().toString(), category.getName()));
         }
 
+        buttonDtoList.add(new ButtonDto("Выйти", "Выйти"));
+
         return keyboardMapper.keyboardDto(tgChat, buttonDtoList);
-    } // TODO: вынести куда-то
+    }
 }

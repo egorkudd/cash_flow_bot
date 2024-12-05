@@ -64,7 +64,7 @@ public class TransactionCategoryChoiceStep extends ChoiceStep {
 
     private KeyboardDto getKeyboardDto(TgChat tgChat) {
         User user = userService.findByTgId(tgChat.getChatId());
-        List<Category> categoryList = categoryService.findAllByUserIdToChoose(user.getId());
+        List<Category> categoryList = categoryService.findAllByUserIdToAddTransaction(user.getId());
         List<ButtonDto> buttonDtoList = new ArrayList<>();
         for (Category category : categoryList) {
             buttonDtoList.add(new ButtonDto(category.getId().toString(), category.getName()));

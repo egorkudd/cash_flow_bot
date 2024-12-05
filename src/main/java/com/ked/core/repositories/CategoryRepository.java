@@ -13,4 +13,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findAllByUserIdAndType(Long userId, ETransaction type);
 
     Optional<Category> findByUserIdAndCreatedAtIsNull(Long userId);
+
+    List<Category> findAllByUserId(Long userId);
 }

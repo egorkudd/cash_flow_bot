@@ -1,5 +1,9 @@
 package com.ked.interaction.steps.impl.user.configure;
 
+import com.ked.core.entities.Category;
+import com.ked.core.entities.User;
+import com.ked.core.services.CategoryService;
+import com.ked.core.services.UserService;
 import com.ked.interaction.enums.EConfigCategory;
 import com.ked.interaction.steps.ChoiceStep;
 import com.ked.tg.dto.ButtonDto;
@@ -10,6 +14,7 @@ import com.ked.tg.entities.TgChat;
 import com.ked.tg.exceptions.AbstractBotException;
 import com.ked.tg.exceptions.EntityNotFoundBotException;
 import com.ked.tg.mappers.KeyboardMapper;
+import com.ked.tg.utils.MessageUtil;
 import com.ked.tg.utils.StepUtil;
 import com.ked.tg.utils.ValidUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +28,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConfigureCategoryActionChoiceStep extends ChoiceStep {
     private static final String PREPARE_MESSAGE_TEXT = "Выберите действие";
+
+    private final CategoryService categoryService;
+
+    private final UserService userService;
 
     private final KeyboardMapper keyboardMapper;
 
@@ -50,8 +59,14 @@ public class ConfigureCategoryActionChoiceStep extends ChoiceStep {
             return 0;
         }
 
-        if (!EConfigCategory.EXIT.toString().equals(data)) {
-            return 1;
+        if (EConfigCategory.RENAME.toString().equals(data)) {
+            User user =userService.findByTgId(tgChat.getChatId());
+            List<Category> categoryToRenameList = categoryService.findAllByUserIdToRename(user.getId());
+            if (!categoryToRenameList.isEmpty()) {
+                return 1;
+            }
+
+            MessageUtil.sendMessage(tgChat.getChatId(), "У вас нет созданных категорий", sender);
         }
 
         return 2;
