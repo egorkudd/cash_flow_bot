@@ -19,8 +19,12 @@ public abstract class ChoiceStep extends ConversationStep {
             return handleIllegalUserAction(update, sender, result.getMessage());
         }
 
-        deleteKeyboard(tgChat, sender);
-        return finishStep(tgChat, sender, update);
+        int stepNumber = finishStep(tgChat, sender, update);
+        if (stepNumber != -1) {
+            deleteKeyboard(tgChat, sender);
+        }
+
+        return stepNumber;
     }
 
     protected void deleteKeyboard(TgChat tgChat, AbsSender sender) {

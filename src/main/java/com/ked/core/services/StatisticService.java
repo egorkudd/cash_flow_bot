@@ -13,13 +13,13 @@ public interface StatisticService {
 
     StatisticInfo getTransactionStatisticByCustomTimeInterval(Long userId, Instant startDate, Instant endDate);
 
-    String collectStatisticMessage(StatisticInfo info, ETimeInterval eTimeInterval);
+    String collectStatisticMessage(StatisticInfo info, String timeIntervalStr);
 
     void setPeriod(String period, Long userId);
 
-    void setYear(String yearStr, Long userId);
+    void setStartDate(String startDateStr, Long userId);
 
-    void setMonth(String monthStr, Long userId);
+    void setEndDate(String endDateStr, Long userId);
 
     Statistic setCreatedAt(Long userId);
 }

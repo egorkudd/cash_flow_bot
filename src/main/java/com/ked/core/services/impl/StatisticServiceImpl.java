@@ -12,6 +12,7 @@ import com.ked.core.repositories.TransactionRepository;
 import com.ked.core.repositories.UserRepository;
 import com.ked.core.services.StatisticService;
 import com.ked.tg.exceptions.EntityNotFoundBotException;
+import com.ked.tg.utils.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +58,7 @@ public class StatisticServiceImpl implements StatisticService {
             case YEAR -> getTransactionsByUserAndYear(userId, dateTime).stream()
                     .map(transactionMapper::toDto)
                     .toList();
-            case EXIT -> null;
+            default -> null;
         };
 
         Map<String, Double> categoryDistribution = calculateCategoryDistribution(transactions);
@@ -84,7 +85,7 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public String collectStatisticMessage(StatisticInfo info, ETimeInterval eTimeInterval) {
+    public String collectStatisticMessage(StatisticInfo info, String timeIntervalStr) {
         StringJoiner incomeJoiner = new StringJoiner("\n    ");
         StringJoiner expenseJoiner = new StringJoiner("\n    ");
 
@@ -112,7 +113,7 @@ public class StatisticServiceImpl implements StatisticService {
                     %s
                 <b>Расходы:</b>
                     %s
-                """.formatted(eTimeInterval.getValue(), incomeJoiner, expenseJoiner);
+                """.formatted(timeIntervalStr, incomeJoiner, expenseJoiner);
     }
 
     @Override
@@ -125,20 +126,20 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public void setYear(String yearStr, Long userId) {
+    public void setStartDate(String startDateStr, Long userId) {
         checkUser(userId);
 
         Statistic statistic = getCollectingStatisticByUserId(userId);
-        statistic.setYear(Integer.parseInt(yearStr));
+        statistic.setStartDate(DateUtil.convertDate(startDateStr));
         statisticRepository.saveAndFlush(statistic);
     }
 
     @Override
-    public void setMonth(String monthStr, Long userId) {
+    public void setEndDate(String endDateStr, Long userId) {
         checkUser(userId);
 
         Statistic statistic = getCollectingStatisticByUserId(userId);
-        statistic.setMonth(Integer.parseInt(monthStr));
+        statistic.setEndDate(DateUtil.convertDate(endDateStr));
         statisticRepository.saveAndFlush(statistic);
     }
 

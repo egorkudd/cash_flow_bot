@@ -10,6 +10,7 @@ public enum ETimeInterval {
     WEEK("7 дней"),
     MONTH("Этот месяц"),
     YEAR("Этот год"),
+    CUSTOM("Свои даты"),
     EXIT("Выйти");
 
     private final String value;

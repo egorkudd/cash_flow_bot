@@ -58,20 +58,29 @@ public class StatisticPeriodChoiceStep extends ChoiceStep {
     @Override
     protected int finishStep(TgChat tgChat, AbsSender sender, Update update) throws AbstractBotException {
         String data = UpdateUtil.getUserInputText(update);
-        if (!ETimeInterval.EXIT.toString().equals(data)) {
-            User user = userService.findByTgId(tgChat.getChatId());
-            statisticService.setPeriod(data, user.getId());
+        return switch (ETimeInterval.valueOf(data)) {
+            case TODAY, WEEK, MONTH, YEAR -> {
+                User user = userService.findByTgId(tgChat.getChatId());
+                statisticService.setPeriod(data, user.getId());
 
-            Statistic statistic = statisticService.setCreatedAt(user.getId());
-            StatisticInfo info = statisticService.getTransactionStatisticByTimeInterval(
-                    user.getId(), statistic.getETimeInterval(), Calendar.getInstance().toInstant()
-            );
+                Statistic statistic = statisticService.setCreatedAt(user.getId());
+                StatisticInfo info = statisticService.getTransactionStatisticByTimeInterval(
+                        user.getId(), statistic.getETimeInterval(), Calendar.getInstance().toInstant()
+                );
 
-            String messageText = statisticService.collectStatisticMessage(info, ETimeInterval.valueOf(data));
-            MessageUtil.sendMessage(tgChat.getChatId(), messageText, sender);
-        }
-
-        return 0;
+                String messageText = statisticService.collectStatisticMessage(
+                        info, ETimeInterval.valueOf(data).getValue()
+                );
+                MessageUtil.sendMessage(tgChat.getChatId(), messageText, sender);
+                yield 0;
+            }
+            case CUSTOM -> {
+                User user = userService.findByTgId(tgChat.getChatId());
+                statisticService.setPeriod(data, user.getId());
+                yield 1;
+            }
+            default -> 0;
+        };
     }
 
     private KeyboardDto getKeyboardDto(TgChat tgChat) {

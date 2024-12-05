@@ -5,13 +5,17 @@ import com.ked.tg.dto.ResultDto;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
 public class DateUtil {
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+    private static final String DATE_FORMAT_STR = "dd.MM.yyyy";
+    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STR);
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT_STR);
     private static final int MAX_AGE = 122;
 
     public static boolean isValidDate(String dateStr) {
@@ -38,7 +42,7 @@ public class DateUtil {
 
     public static Date convertDate(String dateStr) {
         try {
-            return DATE_FORMAT.parse(dateStr);
+            return SIMPLE_DATE_FORMAT.parse(dateStr);
         } catch (ParseException ignored) {
         }
 
@@ -47,7 +51,7 @@ public class DateUtil {
 
     public static Instant convertInstant(String dateStr) {
         try {
-            return DATE_FORMAT.parse(dateStr).toInstant();
+            return SIMPLE_DATE_FORMAT.parse(dateStr).toInstant();
         } catch (ParseException ignored) {
         }
 
@@ -55,15 +59,19 @@ public class DateUtil {
     }
 
     public static String convertDate(Date date) {
-        return DATE_FORMAT.format(date);
+        return SIMPLE_DATE_FORMAT.format(date);
+    }
+
+    public static String convertDate(LocalDate date) {
+        return date.format(DATE_TIME_FORMATTER);
     }
 
     public static String convertDate(LocalDateTime date) {
-        return DATE_FORMAT.format(date);
+        return SIMPLE_DATE_FORMAT.format(date);
     }
 
     public static String convertDate(Instant instant) {
-        return DATE_FORMAT.format(Date.from(instant));
+        return SIMPLE_DATE_FORMAT.format(Date.from(instant));
     }
 
     public static int getYearCountByDate(Date date) {

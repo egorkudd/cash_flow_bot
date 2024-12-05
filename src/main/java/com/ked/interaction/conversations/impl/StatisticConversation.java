@@ -28,6 +28,13 @@ public class StatisticConversation extends AConversation {
         return new HashMap<>() {{
             put(EConversationStep.STATISTIC_PERIOD_CHOICE, new ArrayList<>() {{
                 add(null);
+                add(EConversationStep.STATISTIC_START_DATE_INPUT);
+            }});
+            put(EConversationStep.STATISTIC_START_DATE_INPUT, new ArrayList<>() {{
+                add(EConversationStep.STATISTIC_END_DATE_INPUT);
+            }});
+            put(EConversationStep.STATISTIC_END_DATE_INPUT, new ArrayList<>() {{
+                add(null);
             }});
         }};
     }

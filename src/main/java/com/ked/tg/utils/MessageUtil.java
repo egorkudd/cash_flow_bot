@@ -103,7 +103,7 @@ public class MessageUtil {
                 .build();
     }
 
-    private static EditMessageReplyMarkup completeEditMessageReplyMarkup(
+    public static EditMessageReplyMarkup completeEditMessageReplyMarkup(
             long chatId, Integer messageId, InlineKeyboardMarkup inlineKeyboardMarkup
     ) {
         EditMessageReplyMarkup edit = new EditMessageReplyMarkup();
@@ -119,11 +119,12 @@ public class MessageUtil {
         return getFile;
     }
 
-    private static void editMessageReplyMarkup(EditMessageReplyMarkup edit, AbsSender sender) {
+    public static void editMessageReplyMarkup(EditMessageReplyMarkup edit, AbsSender sender) {
         try {
             sender.execute(edit);
         } catch (TelegramApiException e) {
             log.error(EXCEPTION_MESSAGE_TEMPLATE, edit.getChatId(), e.getMessage());
+            e.printStackTrace();
         }
     }
 

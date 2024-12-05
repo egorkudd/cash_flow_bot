@@ -32,6 +32,11 @@ public class MessageBuilder {
         return this;
     }
 
+    public MessageBuilder setInlineKeyBoard(InlineKeyboardMarkup inlineKeyboardMarkup) {
+        this.keyboardMarkup = inlineKeyboardMarkup;
+        return this;
+    }
+
     public MessageBuilder setPageableKeyBoard(KeyboardDto keyboardDto) {
         this.keyboardMarkup = PageableInlineKeyboardMarkupBuilder.create()
                 .setPageNumber(keyboardDto.getPageNumber())

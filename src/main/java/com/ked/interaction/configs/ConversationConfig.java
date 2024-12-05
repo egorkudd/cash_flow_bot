@@ -19,7 +19,8 @@ import com.ked.interaction.steps.impl.user.configure.category.ConfigureCategoryA
 import com.ked.interaction.steps.impl.user.configure.ConfigureChoiceStep;
 import com.ked.interaction.steps.impl.user.configure.user.EmailInputStep;
 import com.ked.interaction.steps.impl.user.configure.user.PasswordInputStep;
-import com.ked.interaction.steps.impl.user.statistic.StatisticLastDateInputStep;
+import com.ked.interaction.steps.impl.user.statistic.StatisticEndDateChoiceStep;
+import com.ked.interaction.steps.impl.user.statistic.StatisticStartDateChoiceStep;
 import com.ked.interaction.steps.impl.user.statistic.StatisticPeriodChoiceStep;
 import com.ked.interaction.steps.impl.writer.ButtonAddChoiceStep;
 import com.ked.interaction.steps.impl.writer.ButtonInputStep;
@@ -72,7 +73,8 @@ public class ConversationConfig {
             @Autowired ChangeUserNameInputStep changeUserNameInputStep,
 
             @Autowired StatisticPeriodChoiceStep statisticPeriodChoiceStep,
-            @Autowired StatisticLastDateInputStep statisticLastDateInputStep,
+            @Autowired StatisticStartDateChoiceStep statisticStartDateChoiceStep,
+            @Autowired StatisticEndDateChoiceStep statisticEndDateChoiceStep,
 
             @Autowired EmailInputStep emailInputStep,
             @Autowired PasswordInputStep passwordInputStep
@@ -99,7 +101,8 @@ public class ConversationConfig {
             put(EConversationStep.CHANGE_USERNAME_INPUT, changeUserNameInputStep);
 
             put(EConversationStep.STATISTIC_PERIOD_CHOICE, statisticPeriodChoiceStep);
-            put(EConversationStep.STATISTIC_LAST_DATE_INPUT, statisticLastDateInputStep);
+            put(EConversationStep.STATISTIC_START_DATE_INPUT, statisticStartDateChoiceStep);
+            put(EConversationStep.STATISTIC_END_DATE_INPUT, statisticEndDateChoiceStep);
 
             put(EConversationStep.EMAIL_INPUT, emailInputStep);
             put(EConversationStep.PASSWORD_INPUT, passwordInputStep);

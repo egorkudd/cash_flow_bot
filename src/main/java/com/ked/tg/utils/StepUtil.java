@@ -7,6 +7,7 @@ import com.ked.tg.enums.EPageMove;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 public class StepUtil {
@@ -24,6 +25,19 @@ public class StepUtil {
     ) {
         Message message = MessageUtil.sendMessage(
                 MessageBuilder.create().setText(messageText).setInlineKeyBoard(keyboardDto)
+                        .sendMessage(tgChat.getChatId()),
+                sender
+        );
+
+        int messageId = message != null ? message.getMessageId() : -1;
+        tgChat.setPrevBotMessageId(messageId);
+    }
+
+    public static void sendPrepareMessageWithInlineKeyBoard(
+            TgChat tgChat, String messageText, InlineKeyboardMarkup inlineKeyboardMarkup, AbsSender sender
+    ) {
+        Message message = MessageUtil.sendMessage(
+                MessageBuilder.create().setText(messageText).setInlineKeyBoard(inlineKeyboardMarkup)
                         .sendMessage(tgChat.getChatId()),
                 sender
         );
